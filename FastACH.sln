@@ -9,13 +9,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{24773974-0AA
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{004AAAE5-A97B-4C28-BE0E-605A59E49B3C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastACH.Tests", "tests\FastACH.Tests\FastACH.Tests.csproj", "{062EAD7B-5FA4-4C29-9EB8-FD4B153BF820}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastACH.Tests", "tests\FastACH.Tests\FastACH.Tests.csproj", "{062EAD7B-5FA4-4C29-9EB8-FD4B153BF820}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{80F68839-BD77-4C1F-A647-FCE24D897569}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		LICENSE = LICENSE
+		nuget.config = nuget.config
 		README.md = README.md
 	EndProjectSection
 EndProject
