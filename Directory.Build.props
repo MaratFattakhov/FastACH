@@ -1,0 +1,41 @@
+﻿﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<Version>0.0.1.0</Version>
+
+		<Description>.NET library for reading and writing ACH files</Description>
+		<Authors>Michael Kidd, Marat Fattakhov</Authors>
+		<!--<Company>the company name</Company>-->
+		<!--<Copyright>2022-2023 the company name</Copyright>-->
+		<RepositoryUrl>https://github.com/MaratFattakhov/FastACH</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<WarningLevel>9999</WarningLevel>
+		<ErrorReport>prompt</ErrorReport>
+		<NoWarn>1573;1591</NoWarn>
+		<Features>strict</Features>
+		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+
+		<AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+		<!--<SignAssembly>True</SignAssembly>-->
+		<!--<AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)/Build/project_name.snk</AssemblyOriginatorKeyFile>-->
+		<!--<DelaySign>False</DelaySign>-->
+
+		<GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+		<GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+		<GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+		<GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+		<GenerateAssemblyVersionAttribute>true</GenerateAssemblyVersionAttribute>
+		<GenerateAssemblyFileVersionAttribute>true</GenerateAssemblyFileVersionAttribute>
+		<GenerateNeutralResourcesLanguageAttribute>false</GenerateNeutralResourcesLanguageAttribute>
+
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+
+		<AccelerateBuildsInVisualStudio>true</AccelerateBuildsInVisualStudio>
+		<ProduceReferenceAssembly>true</ProduceReferenceAssembly>
+	</PropertyGroup>
+
+</Project>

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ACH_Transform.ACHFileProcessor.Models
+﻿namespace FastACH.Models
 {
     public class ACHRecordType8 : ACHBaseRecord
     {
@@ -73,7 +71,7 @@ namespace ACH_Transform.ACHFileProcessor.Models
             Console.Write(DataFormatHelper.FormatForAch(OriginatingDFINumber, 8));
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write(DataFormatHelper.FormatForAch(BatchNumber, 7));
-            Console.WriteLine(String.Empty);
+            Console.WriteLine(string.Empty);
         }
     }
 }

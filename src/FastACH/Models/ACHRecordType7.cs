@@ -1,7 +1,4 @@
-﻿using System;
-using System.Transactions;
-
-namespace ACH_Transform.ACHFileProcessor.Models
+﻿namespace FastACH.Models
 {
     public class ACHRecordType7 : ACHBaseRecord
     {
@@ -39,7 +36,7 @@ namespace ACH_Transform.ACHFileProcessor.Models
             Console.Write(DataFormatHelper.FormatForAch(AddendaSequenceNumber, 4), true);
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.Write(DataFormatHelper.FormatForAch(EntryDetailSequenceNumber, 7, true));
-            Console.WriteLine(String.Empty);
+            Console.WriteLine(string.Empty);
         }
     }
 }

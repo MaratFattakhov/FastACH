@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ACH_Transform.ACHFileProcessor.Models
+﻿namespace FastACH.Models
 {
     public abstract class ACHBaseRecord
     {

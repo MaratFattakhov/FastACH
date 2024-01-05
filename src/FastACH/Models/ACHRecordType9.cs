@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ACH_Transform.ACHFileProcessor.Models
+﻿namespace FastACH.Models
 {
     public class ACHRecordType9 : ACHBaseRecord
     {
@@ -29,7 +27,7 @@ namespace ACH_Transform.ACHFileProcessor.Models
         public string Reserved => new string(' ', 39);
 
         public override string WriteAsText() =>
-                $"{RecordTypeCode}" +                
+                $"{RecordTypeCode}" +
                 $"{DataFormatHelper.FormatForAch(BatchCount, 6)}" +
                 $"{DataFormatHelper.FormatForAch(BlockCount, 6)}" +
                 $"{DataFormatHelper.FormatForAch(EntryAddendaCount, 8)}" +
@@ -54,7 +52,7 @@ namespace ACH_Transform.ACHFileProcessor.Models
             Console.Write(DataFormatHelper.FormatForAch(TotalDebitEntryDollarAmount, 12));
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write(DataFormatHelper.FormatForAch(TotalCreditEntryDollarAmount, 12));
-            Console.WriteLine(String.Empty);
+            Console.WriteLine(string.Empty);
         }
     }
 }

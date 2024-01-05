@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace ACH_Transform.ACHFileProcessor.Models
+﻿namespace FastACH.Models
 {
     public class ACHRecordType1 : ACHBaseRecord
     {
@@ -89,7 +87,7 @@ namespace ACH_Transform.ACHFileProcessor.Models
             Console.Write(DataFormatHelper.FormatForAch(ImmediateOriginName, 23));
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write(DataFormatHelper.FormatForAch(ReferenceCode, 8));
-            Console.WriteLine(String.Empty);
+            Console.WriteLine(string.Empty);
         }
     }
 }

@@ -1,6 +1,4 @@
-﻿using System.IO;
-
-namespace ACH_Transform.ACHFileProcessor.Services
+﻿namespace FastACH.Services
 {
     internal interface IAchFileService
     {

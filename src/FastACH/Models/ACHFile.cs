@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-
-namespace ACH_Transform.ACHFileProcessor.Models
+﻿namespace FastACH.Models
 {
     public class ACHFile
     {
@@ -86,7 +81,7 @@ namespace ACH_Transform.ACHFileProcessor.Models
             WriteToStream(streamWriter, NineRecord.WriteAsText(), false);
 
             // write extra fillers so block count is even at 10
-            for (int i = 0; i < ((NineRecord.BlockCount * 10) - _fileLineCount); i++)
+            for (int i = 0; i < NineRecord.BlockCount * 10 - _fileLineCount; i++)
             {
                 WriteToStream(streamWriter, new string('9', 94), false);
             }
@@ -97,7 +92,7 @@ namespace ACH_Transform.ACHFileProcessor.Models
             // we track line nums in order to use the block fillers of 9999's at EOF
             if (incrementLineCount)
                 _fileLineCount++;
-            
+
             streamWriter.WriteLine(text);
         }
 
@@ -159,9 +154,9 @@ namespace ACH_Transform.ACHFileProcessor.Models
             NineRecord.WriteToConsole();
 
             // write extra fillers so block count is even at 10
-            for (int i = 0; i < ((NineRecord.BlockCount * 10) - _fileLineCount); i++)
+            for (int i = 0; i < NineRecord.BlockCount * 10 - _fileLineCount; i++)
             {
-               new string('9', 94);
+                new string('9', 94);
             }
         }
     }

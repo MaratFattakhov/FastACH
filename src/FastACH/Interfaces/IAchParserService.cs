@@ -1,6 +1,6 @@
-﻿using ACH_Transform.ACHFileProcessor.Models;
+﻿using FastACH.Models;
 
-namespace ACH_Transform.ACHFileProcessor.Interfaces
+namespace FastACH.Interfaces
 {
     public interface IAchParserService
     {

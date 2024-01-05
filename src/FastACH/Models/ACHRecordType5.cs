@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace ACH_Transform.ACHFileProcessor.Models
+﻿namespace FastACH.Models
 {
     public class ACHRecordType5 : ACHBaseRecord
     {
@@ -58,7 +54,7 @@ namespace ACH_Transform.ACHFileProcessor.Models
             BatchNumber = counter;
             EightRecord.BatchNumber = counter;
             EightRecord.EntryAddendaCount = SixRecordList.Count + SixRecordList.Where(x => x.AddendaRecord != null).Count();
-            EightRecord.EntryHash = SixRecordList.Sum(x => Int64.Parse(x.ReceivingDFINumber));
+            EightRecord.EntryHash = SixRecordList.Sum(x => long.Parse(x.ReceivingDFINumber));
             EightRecord.TotalCreditEntryDollarAmount = SixRecordList.Where(x => DataFormatHelper.CreditCodes.Contains(x.TransactionCode)).Sum(x => x.Amount);
             EightRecord.TotalDebitEntryDollarAmount = SixRecordList.Where(x => DataFormatHelper.DebitCodes.Contains(x.TransactionCode)).Sum(x => x.Amount);
         }
@@ -72,10 +68,10 @@ namespace ACH_Transform.ACHFileProcessor.Models
             $"{DataFormatHelper.FormatForAch(StandardEntryClassCode, 3, true)}" +
             $"{DataFormatHelper.FormatForAch(CompanyEntryDescription, 10)}" +
             $"{DataFormatHelper.FormatForAch(CompanyDescriptiveDate, 6)}" +
-            $"{DataFormatHelper.FormatForAch(EffectiveEntryDate, 6)}" + 
-            $"{DataFormatHelper.FormatForAch(SettlementDate, 3)}" + 
-            $"{DataFormatHelper.FormatForAch(OriginatorsStatusCode, 1)}" + 
-            $"{DataFormatHelper.FormatForAch(OriginatorsDFINumber, 8)}" + 
+            $"{DataFormatHelper.FormatForAch(EffectiveEntryDate, 6)}" +
+            $"{DataFormatHelper.FormatForAch(SettlementDate, 3)}" +
+            $"{DataFormatHelper.FormatForAch(OriginatorsStatusCode, 1)}" +
+            $"{DataFormatHelper.FormatForAch(OriginatorsDFINumber, 8)}" +
             $"{DataFormatHelper.FormatForAch(BatchNumber, 7)}";
 
         public override void WriteToConsole()
@@ -106,7 +102,7 @@ namespace ACH_Transform.ACHFileProcessor.Models
             Console.Write(DataFormatHelper.FormatForAch(OriginatorsDFINumber, 8));
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.Write(DataFormatHelper.FormatForAch(BatchNumber, 7));
-            Console.WriteLine(String.Empty);
+            Console.WriteLine(string.Empty);
         }
     }
 }

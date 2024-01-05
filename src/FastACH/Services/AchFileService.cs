@@ -1,11 +1,7 @@
-﻿using ACH_Transform.ACHFileProcessor.Implementations;
-using ACH_Transform.ACHFileProcessor.Interfaces;
-using ACH_Transform.ACHFileProcessor.Models;
-using System;
-using System.IO;
-using System.Linq;
+﻿using FastACH.Implementations;
+using FastACH.Models;
 
-namespace ACH_Transform.ACHFileProcessor.Services
+namespace FastACH.Services
 {
     public class AchFileService : IAchFileService
     {
@@ -121,7 +117,7 @@ namespace ACH_Transform.ACHFileProcessor.Services
 
         public void WriteToConsole()
         {
-            _achFile.OutputFileToConsole(); 
+            _achFile.OutputFileToConsole();
             Console.ResetColor();
         }
     }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ACH_Transform.ACHFileProcessor
+﻿namespace FastACH
 {
     public static class DataFormatHelper
     {
@@ -19,19 +16,19 @@ namespace ACH_Transform.ACHFileProcessor
         {
             var stringValue = data.ToString();
 
-            if (data is decimal) 
+            if (data is decimal)
             {
                 stringValue = stringValue
                     .Replace("$", string.Empty)
                     .Replace(".", string.Empty)
                     .Replace(",", string.Empty);
 
-                return maxLength > 0 ? GetDisplayValue(stringValue, true, maxLength, '0') : ((stringValue.Length > maxLength) ? stringValue.Substring(0, maxLength) : stringValue);
+                return maxLength > 0 ? GetDisplayValue(stringValue, true, maxLength, '0') : stringValue.Length > maxLength ? stringValue.Substring(0, maxLength) : stringValue;
             }
             else if (data is int || data is long)
-                return maxLength > 0 ? GetDisplayValue(data, true, maxLength, '0') : ((stringValue.Length > maxLength) ? stringValue.Substring(0, maxLength) : stringValue);
+                return maxLength > 0 ? GetDisplayValue(data, true, maxLength, '0') : stringValue.Length > maxLength ? stringValue.Substring(0, maxLength) : stringValue;
 
-            return maxLength > 0 ? GetDisplayValue(data, padLeft, maxLength, ' ') : ((stringValue.Length > maxLength) ? stringValue.Substring(0, maxLength) : stringValue);
+            return maxLength > 0 ? GetDisplayValue(data, padLeft, maxLength, ' ') : stringValue.Length > maxLength ? stringValue.Substring(0, maxLength) : stringValue;
         }
 
         private static string GetDisplayValue(object value, bool padLeft, int maxLength, char filler) =>
@@ -68,7 +65,7 @@ namespace ACH_Transform.ACHFileProcessor
             int value;
             string trimValue = data.TrimStart('0');
 
-            if (Int32.TryParse(trimValue, out value))
+            if (int.TryParse(trimValue, out value))
                 return value;
 
             return 0;

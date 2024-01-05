@@ -1,14 +1,13 @@
-﻿using ACH_Transform.ACHFileProcessor.Interfaces;
-using ACH_Transform.ACHFileProcessor.Models;
-using System;
+﻿using FastACH.Interfaces;
+using FastACH.Models;
 
-namespace ACH_Transform.ACHFileProcessor.Implementations
+namespace FastACH.Implementations
 {
     internal class EightRecordParser : IAchParserService
     {
         public ACHBaseRecord ParseRecord(string data)
         {
-            if (String.IsNullOrEmpty(data) || data.Length != 94)
+            if (string.IsNullOrEmpty(data) || data.Length != 94)
             {
                 throw new ArgumentException($"Invalid Batch Control Record Header (8 record) length: Expected 94, Actual {data?.Length ?? 0}");
             }
