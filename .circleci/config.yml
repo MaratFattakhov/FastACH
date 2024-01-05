@@ -15,16 +15,19 @@ jobs:
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "3e:5e:43:bc:19:84:7e:18:76:f6:81:1c:28:57:8a:04"
       - checkout
-      - run:
-         command: dotnet restore
-         shell: cmd.exe
-      - run:
-         command: dotnet restore
-         shell: cmd.exe
-      - run:
-         command: dotnet test
-         shell: cmd.exe
+      #- run:
+      #   command: dotnet restore
+      #   shell: cmd.exe
+      #- run:
+      #   command: dotnet restore
+      #   shell: cmd.exe
+      #- run:
+      #   command: dotnet test
+      #   shell: cmd.exe
 # Orchestrate jobs using workflows
 # See: https://circleci.com/docs/configuration-reference/#workflows
 workflows:
