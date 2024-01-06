@@ -12,6 +12,7 @@ jobs:
     executor:
       name: win/default # executor type
       size: medium # can be medium, large, xlarge, 2xlarge
+      shell: 'powershell.exe -ExecutionPolicy Bypass'
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps
     steps:
@@ -19,18 +20,33 @@ jobs:
           fingerprints:
             - "3e:5e:43:bc:19:84:7e:18:76:f6:81:1c:28:57:8a:04"
       - checkout
-      #- run:
-      #   command: dotnet restore
-      #   shell: cmd.exe
-      #- run:
-      #   command: dotnet restore
-      #   shell: cmd.exe
-      #- run:
-      #   command: dotnet test
-      #   shell: cmd.exe
-# Orchestrate jobs using workflows
-# See: https://circleci.com/docs/configuration-reference/#workflows
+      - run:
+          name: "Install project dependencies"
+          command: dotnet restore
+      - run:
+          name: "Build Application according to some given configuration"
+          command: dotnet build --configuration Release
+      - run:
+          name: "Create Nuget package"
+          command: dotnet pack --no-restore --no-build --include-symbols --configuration Release --output package
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - package
+  publish-nuget-package:
+    executor:
+      name: win/default
+      size: medium
+    steps:
+      - attach_workspace:
+            at: ~/project
+      - run:
+          name: "Install project dependencies"
+          command: dotnet nuget push package\FastACH.0.0.1.nupkg -s https://api.nuget.org/v3/index.json -k $env:NUGET_API_KEY
 workflows:
   Build-and-Publish:
     jobs:
       - build
+      - publish-nuget-package:
+          requires:
+            - build
