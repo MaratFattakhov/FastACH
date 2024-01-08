@@ -5,20 +5,18 @@ version: 2.1
 orbs:
   win: circleci/windows@5.0
 
-environment:
-  PACK_VERSION: 0.0.1.1
 # Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/configuration-reference/#jobs
+# See: https://circleci.com/docs/configuration-reference/#jobs 
 jobs:
-  build:
+  build-test-publish:
     executor:
       name: win/default # executor type
       size: medium # can be medium, large, xlarge, 2xlarge
       shell: 'powershell.exe -ExecutionPolicy Bypass'
     # Add steps to the job
-    # See: https://circleci.com/docs/configuration-reference/#steps
-    #environment:
-    ##  PACK_VERSION: 0.0.1.1
+    # See: https://circleci.com/docs/configuration-reference/#steps 
+    environment:
+      NUGET_PACK_VERSION: 0.0.1.1
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -35,25 +33,11 @@ jobs:
           command: dotnet test --no-restore --no-build --configuration Release
       - run:
           name: "Create Nuget package"
-          command: dotnet pack --no-restore --no-build --include-symbols --configuration Release --output package -p:PackageVersion=$env:CIRCLE_TAG.$env:CIRCLE_BUILD_NUM
-      - persist_to_workspace:
-          root: ~/project
-          paths:
-            - package
-  publish-nuget-package:
-    executor:
-      name: win/default
-      size: medium
-    steps:
-      - attach_workspace:
-            at: ~/project
+          command: dotnet pack --no-restore --no-build --include-symbols --configuration Release --output package -p:PackageVersion=$env:NUGET_PACK_VERSION
       - run:
           name: "Pushing nuget package"
-          command: dotnet nuget push package\FastACH.$env:CIRCLE_TAG.$env:CIRCLE_BUILD_NUM.nupkg --skip-duplicate -s https://api.nuget.org/v3/index.json -k $env:NUGET_API_KEY
+          command: dotnet nuget push package\FastACH.$env:NUGET_PACK_VERSION.nupkg --skip-duplicate -s https://api.nuget.org/v3/index.json -k $env:NUGET_API_KEY
 workflows:
   Build-and-Publish:
     jobs:
-      - build
-      - publish-nuget-package:
-          requires:
-            - build
+      - build-test-publish
