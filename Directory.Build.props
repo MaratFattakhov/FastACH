@@ -1,6 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-	<Version>0.0.1.0</Version>
+	<!--Version was moved to build script-->
+	<!--<Version>0.0.1.0</Version>-->
 
 	<Description>.NET library for reading and writing ACH files</Description>
 	<Authors>Michael Kidd, Marat Fattakhov</Authors>
