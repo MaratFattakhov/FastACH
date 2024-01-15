@@ -1,4 +1,5 @@
-﻿namespace FastACH
+﻿
+namespace FastACH
 {
     public static class DataFormatHelper
     {
@@ -14,7 +15,12 @@
         /// <returns></returns>
         public static string FormatForAch(object data, int maxLength = 0, bool padLeft = false)
         {
-            var stringValue = data.ToString();
+            if (data is null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
+            var stringValue = data.ToString() ?? string.Empty;
 
             if (data is decimal)
             {
@@ -25,7 +31,7 @@
 
                 return maxLength > 0 ? GetDisplayValue(stringValue, true, maxLength, '0') : stringValue.Length > maxLength ? stringValue.Substring(0, maxLength) : stringValue;
             }
-            else if (data is int || data is long)
+            else if (data is uint || data is int || data is long || data is ulong)
                 return maxLength > 0 ? GetDisplayValue(data, true, maxLength, '0') : stringValue.Length > maxLength ? stringValue.Substring(0, maxLength) : stringValue;
 
             return maxLength > 0 ? GetDisplayValue(data, padLeft, maxLength, ' ') : stringValue.Length > maxLength ? stringValue.Substring(0, maxLength) : stringValue;
@@ -66,6 +72,17 @@
             string trimValue = data.TrimStart('0');
 
             if (int.TryParse(trimValue, out value))
+                return value;
+
+            return 0;
+        }
+
+        public static ulong ParseUlong(string data)
+        {
+            ulong value;
+            string trimValue = data.TrimStart('0');
+
+            if (ulong.TryParse(trimValue, out value))
                 return value;
 
             return 0;

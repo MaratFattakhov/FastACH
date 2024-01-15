@@ -1,22 +1,22 @@
 ﻿namespace FastACH.Models
 {
-    public class ACHFile
+    public class AchFile
     {
         private bool _shouldRecalculate = true;
         private int _fileLineCount = 0;
 
-        public ACHFile()
+        public AchFile()
         {
         }
 
-        public ACHFile(bool shouldRecalculate)
+        public AchFile(bool shouldRecalculate)
         {
             _shouldRecalculate = shouldRecalculate;
         }
 
-        public ACHRecordType1 OneRecord = new();
-        public List<ACHRecordType5> BatchRecordList = new();
-        public ACHRecordType9 NineRecord = new();
+        public OneRecord OneRecord = new();
+        public List<FiveRecord> BatchRecordList = new();
+        public NineRecord NineRecord = new();
 
         public void SaveFileToDisk(string filePath)
         {
@@ -51,26 +51,28 @@
         /// <param name="streamWriter"></param>
         private void BuildFileContents(StreamWriter streamWriter)
         {
-            WriteToStream(streamWriter, OneRecord.WriteAsText());
+            var writer = new StringWriter(streamWriter);
+
+            WriteToStream(streamWriter, OneRecord);
 
             for (int i = 0; i < BatchRecordList.Count; i++)
             {
                 if (_shouldRecalculate)
-                    BatchRecordList[i].RecalculateTotals(i + 1);
+                    BatchRecordList[i].RecalculateTotals((ulong)i + 1);
 
-                WriteToStream(streamWriter, BatchRecordList[i].WriteAsText());
+                WriteToStream(streamWriter, BatchRecordList[i]);
 
                 foreach (var batchDetailRecord in BatchRecordList[i].SixRecordList)
                 {
-                    WriteToStream(streamWriter, batchDetailRecord.WriteAsText());
+                    WriteToStream(streamWriter, batchDetailRecord);
 
                     if (batchDetailRecord.AddendaRecord != null)
                     {
-                        WriteToStream(streamWriter, batchDetailRecord.AddendaRecord.WriteAsText());
+                        WriteToStream(streamWriter, batchDetailRecord.AddendaRecord);
                     }
                 }
 
-                WriteToStream(streamWriter, BatchRecordList[i].EightRecord.WriteAsText());
+                WriteToStream(streamWriter, BatchRecordList[i].EightRecord);
             }
 
             // need to increment line count before the recalc to ensure the block count is correct
@@ -78,22 +80,24 @@
             if (_shouldRecalculate)
                 RecalculateFileTotals();
 
-            WriteToStream(streamWriter, NineRecord.WriteAsText(), false);
+            WriteToStream(streamWriter, NineRecord, false);
 
             // write extra fillers so block count is even at 10
             for (int i = 0; i < NineRecord.BlockCount * 10 - _fileLineCount; i++)
             {
-                WriteToStream(streamWriter, new string('9', 94), false);
+                streamWriter.WriteLine(new string('9', 94));
             }
         }
 
-        private void WriteToStream(StreamWriter streamWriter, string text, bool incrementLineCount = true)
+        private void WriteToStream(StreamWriter streamWriter, IRecord record, bool incrementLineCount = true)
         {
             // we track line nums in order to use the block fillers of 9999's at EOF
             if (incrementLineCount)
                 _fileLineCount++;
 
-            streamWriter.WriteLine(text);
+            var stringWriter = new StringWriter(streamWriter);
+            record.Write(stringWriter);
+            streamWriter.WriteLine();
         }
 
         /// <summary>
@@ -109,41 +113,42 @@
             NineRecord.TotalDebitEntryDollarAmount = BatchRecordList.Select(x => x.SixRecordList.Where(y => DataFormatHelper.DebitCodes.Contains(y.TransactionCode)).Select(x => x.Amount).Sum()).Sum();
         }
 
-        public void SaveFileToS3(string key)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Outputs the data to the console for debugging (color coded outfor for easy reading)
         /// </summary>
         public void OutputFileToConsole()
         {
             _fileLineCount++;
-            OneRecord.WriteToConsole();
+            
+            OneRecord.Write(ConsoleWriter.CreateForRecord(OneRecord));
+            Console.WriteLine();
 
             for (int i = 0; i < BatchRecordList.Count; i++)
             {
                 if (_shouldRecalculate)
-                    BatchRecordList[i].RecalculateTotals(i + 1);
+                    BatchRecordList[i].RecalculateTotals((ulong)i + 1);
 
                 _fileLineCount++;
-                BatchRecordList[i].WriteToConsole();
+                BatchRecordList[i].Write(ConsoleWriter.CreateForRecord(BatchRecordList[i]));
+                Console.WriteLine();
 
                 foreach (var batchDetailRecord in BatchRecordList[i].SixRecordList)
                 {
                     _fileLineCount++;
-                    batchDetailRecord.WriteToConsole();
+                    batchDetailRecord.Write(ConsoleWriter.CreateForRecord(batchDetailRecord));
+                    Console.WriteLine();
 
                     if (batchDetailRecord.AddendaRecord != null)
                     {
                         _fileLineCount++;
-                        batchDetailRecord.AddendaRecord.WriteToConsole();
+                        batchDetailRecord.AddendaRecord.Write(ConsoleWriter.CreateForRecord(batchDetailRecord.AddendaRecord));
+                        Console.WriteLine();
                     }
                 }
 
                 _fileLineCount++;
-                BatchRecordList[i].EightRecord.WriteToConsole();
+                BatchRecordList[i].EightRecord.Write(ConsoleWriter.CreateForRecord(BatchRecordList[i].EightRecord));
+                Console.WriteLine();
             }
 
             // need to increment line count before the recalc to ensure the block count is correct
@@ -151,12 +156,13 @@
             if (_shouldRecalculate)
                 RecalculateFileTotals();
 
-            NineRecord.WriteToConsole();
+            NineRecord.Write(ConsoleWriter.CreateForRecord(NineRecord));
 
+            Console.WriteLine();
             // write extra fillers so block count is even at 10
             for (int i = 0; i < NineRecord.BlockCount * 10 - _fileLineCount; i++)
             {
-                new string('9', 94);
+                Console.WriteLine(new string('9', 94));
             }
         }
     }
