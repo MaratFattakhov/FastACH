@@ -1,5 +1,4 @@
-﻿
-namespace FastACH.Models
+﻿namespace FastACH.Models
 {
     public class EightRecord: IRecord
     {
@@ -7,13 +6,13 @@ namespace FastACH.Models
         public string RecordTypeCode => "8";
 
         // Position 2-4: Service Class Code (numeric)
-        public string ServiceClassCode { get; set; }
+        public uint ServiceClassCode { get; set; }
 
         // Position 5-10: Entry/Addenda Count (numeric)
-        public int EntryAddendaCount { get; set; }
+        public uint EntryAddendaCount { get; set; }
 
         // Position 11-20: Entry Hash (numeric)
-        public long EntryHash { get; set; }
+        public ulong EntryHash { get; set; }
 
         // Position 21-32: Total Debit Entry Dollar Amount (numeric)
         public decimal TotalDebitEntryDollarAmount { get; set; }
@@ -28,27 +27,27 @@ namespace FastACH.Models
         public string MessageAuthenticationCode { get; set; }
 
         // Position 74-79: Reserved (blank space)
-        public string Reserved => new string(' ', 6);
+        public string Reserved => "      ";
 
         // Position 80-87: Originating DFI Identification Number (numeric)
         public string OriginatingDFINumber { get; set; }
 
-        // Position 88-94: Batch Number (alpha-numeric)
+        // Position 88-94: Batch Number (numeric)
         public ulong BatchNumber { get; set; }
 
         public void Write(ILineWriter writer)
         {
             writer.Write(RecordTypeCode);
-            writer.Write(ServiceClassCode.Length > 3 ? ServiceClassCode.Substring(0, 3) : ServiceClassCode.PadLeft(3, '0'));
-            writer.Write(DataFormatHelper.FormatForAch(EntryAddendaCount, 6));
-            writer.Write(DataFormatHelper.FormatForAch(EntryHash % 10000000000, 10, true));
-            writer.Write(DataFormatHelper.FormatForAch(TotalDebitEntryDollarAmount, 12));
-            writer.Write(DataFormatHelper.FormatForAch(TotalCreditEntryDollarAmount, 12));
-            writer.Write(DataFormatHelper.FormatForAch(CompanyIdentification, 10));
-            writer.Write(DataFormatHelper.FormatForAch(MessageAuthenticationCode, 19));
+            writer.Write(ServiceClassCode, 3);
+            writer.Write(EntryAddendaCount, 6);
+            writer.Write(EntryHash % 10000000000, 10);
+            writer.Write((ulong)(TotalDebitEntryDollarAmount * 100), 12);
+            writer.Write((ulong)(TotalCreditEntryDollarAmount * 100), 12);
+            writer.Write(CompanyIdentification, 10);
+            writer.Write(MessageAuthenticationCode, 19);
             writer.Write(Reserved);
-            writer.Write(DataFormatHelper.FormatForAch(OriginatingDFINumber, 8));
-            writer.Write(DataFormatHelper.FormatForAch(BatchNumber, 7));
+            writer.Write(OriginatingDFINumber, 8);
+            writer.Write(BatchNumber, 7);
         }
 
         public void ParseRecord(string data)
@@ -58,15 +57,15 @@ namespace FastACH.Models
                 throw new ArgumentException($"Invalid Batch Control Record Header (8 record) length: Expected 94, Actual {data?.Length ?? 0}");
             }
 
-            ServiceClassCode = data.Substring(1, 3).Trim();
-            EntryAddendaCount = DataFormatHelper.ParseInt(data.Substring(4, 6).Trim());
-            EntryHash = DataFormatHelper.ParseInt(data.Substring(10, 10).Trim());
-            TotalDebitEntryDollarAmount = DataFormatHelper.ParseDecimal(data.Substring(20, 12).Trim());
-            TotalCreditEntryDollarAmount = DataFormatHelper.ParseDecimal(data.Substring(32, 12).Trim());
+            ServiceClassCode = uint.Parse(data.Substring(1, 3));
+            EntryAddendaCount = uint.Parse(data.Substring(4, 6));
+            EntryHash = uint.Parse(data.Substring(10, 10));
+            TotalDebitEntryDollarAmount = decimal.Parse(data.Substring(20, 12)) / 100;
+            TotalCreditEntryDollarAmount = decimal.Parse(data.Substring(32, 12)) / 100;
             CompanyIdentification = data.Substring(44, 10).Trim();
             MessageAuthenticationCode = data.Substring(54, 19).Trim();
             OriginatingDFINumber = data.Substring(79, 8).Trim();
-            BatchNumber = DataFormatHelper.ParseUlong(data.Substring(87, 7).Trim());
+            BatchNumber = ulong.Parse(data.Substring(87, 7));
         }
     }
 }

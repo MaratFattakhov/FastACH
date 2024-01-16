@@ -6,14 +6,14 @@ namespace FastACH.Tests.Records
     public class SevenRecordTests
     {
         [Theory]
-        [InlineData("Monthly bill", "0001", "0000001")]
+        [InlineData("Monthly bill", 1, 1)]
         public void ParseRecord(
             string addendaInformation,
-            string addendaSequenceNumber,
-            string entryDetailSequenceNumber)
+            uint addendaSequenceNumber,
+            ulong entryDetailSequenceNumber)
         { 
             // Arrange
-            var s = $"705{addendaInformation,-80}{addendaSequenceNumber}{entryDetailSequenceNumber}";
+            var s = $"705{addendaInformation,-80}{addendaSequenceNumber:0000}{entryDetailSequenceNumber:0000000}";
             var record = new SevenRecord();
 
             // Act

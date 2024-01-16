@@ -5,11 +5,20 @@ namespace FastACH.Tests.Records
 {
     public class OneRecordTests
     {
-        [Fact]
-        public void ParseRecord()
+        [Theory]
+        [InlineData("1234567890", "1234567890", "240110", "1454", 'A', "MyBank", "My Company", "00000000")]
+        public void ParseRecord(
+            string immediateDestination,
+            string immediateOrigin,
+            string fileCreationDate,
+            string fileCreationTime,
+            char fileIdModifier,
+            string immediateDestinationName,
+            string immediateOriginName,
+            string referenceCode)
         {
             // Arrange
-            var s = "101123456789 123456789 2401101418A094101PNC Bank               Microsoft Inc.         00000000";
+            var s = $"101{immediateDestination, 10}{immediateOrigin, 10}{fileCreationDate}{fileCreationTime}{fileIdModifier}094101{immediateDestinationName, -23}{immediateOriginName, -23}{referenceCode, -8}";
             var record = new OneRecord();
 
             // Act
@@ -18,14 +27,14 @@ namespace FastACH.Tests.Records
             // Assert
             record.Should().BeEquivalentTo(new OneRecord
             {
-                ImmediateDestination = "123456789",
-                ImmediateOrigin = "123456789",
-                FileCreationDate = new DateOnly(2024, 1, 10),
-                FileCreationTime = new TimeOnly(14, 18, 0, 0, 0),
-                FileIdModifier = 'A',
-                ImmediateDestinationName = "PNC Bank",
-                ImmediateOriginName = "Microsoft Inc.",
-                ReferenceCode = "00000000"
+                ImmediateDestination = immediateDestination,
+                ImmediateOrigin = immediateOrigin,
+                FileCreationDate = DateOnly.ParseExact(fileCreationDate, "yyMMdd"),
+                FileCreationTime = TimeOnly.ParseExact(fileCreationTime, "HHmm"),
+                FileIdModifier = fileIdModifier,
+                ImmediateDestinationName = immediateDestinationName,
+                ImmediateOriginName = immediateOriginName,
+                ReferenceCode = referenceCode
             });
         }
     }

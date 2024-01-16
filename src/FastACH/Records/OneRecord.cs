@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace FastACH.Models
+﻿namespace FastACH.Models
 {
     public class OneRecord : IRecord
     {
@@ -20,7 +18,7 @@ namespace FastACH.Models
         public DateOnly FileCreationDate { get; set; }
 
         // Position 30-33: File Creation Time (numeric, HHmm)
-        public TimeOnly FileCreationTime { get; set; }
+        public TimeOnly? FileCreationTime { get; set; }
 
         // Position 34-34: File ID Modifier (alpha-numeric)
         public char FileIdModifier { get; set; }
@@ -47,17 +45,17 @@ namespace FastACH.Models
         {
             writer.Write(RecordTypeCode);
             writer.Write(PriorityCode);
-            writer.Write(DataFormatHelper.FormatForAch(ImmediateDestination, 10, true));
-            writer.Write(DataFormatHelper.FormatForAch(ImmediateOrigin, 10, true));
-            writer.Write($"{FileCreationDate:yyMMdd}");
-            writer.Write($"{FileCreationTime:HHmm}");
-            writer.Write(DataFormatHelper.FormatForAch(FileIdModifier, 1));
-            writer.Write(DataFormatHelper.FormatForAch(RecordSize, 3, true));
-            writer.Write($"{BlockingFactor}");
-            writer.Write($"{FormatCode}");
-            writer.Write(DataFormatHelper.FormatForAch(ImmediateDestinationName, 23));
-            writer.Write(DataFormatHelper.FormatForAch(ImmediateOriginName, 23));
-            writer.Write(DataFormatHelper.FormatForAch(ReferenceCode, 8));
+            writer.Write(ImmediateDestination, 10);
+            writer.Write(ImmediateOrigin, 10);
+            writer.Write(FileCreationDate);
+            writer.Write(FileCreationTime);
+            writer.Write(FileIdModifier.ToString(), 1);
+            writer.Write(RecordSize, 3);
+            writer.Write(BlockingFactor, 2);
+            writer.Write(FormatCode, 1);
+            writer.Write(ImmediateDestinationName, 23);
+            writer.Write(ImmediateOriginName, 23);
+            writer.Write(ReferenceCode, 8);
         }
 
         public void ParseRecord(string data)
@@ -69,8 +67,8 @@ namespace FastACH.Models
 
             ImmediateDestination = data.Substring(3, 10).Trim();
             ImmediateOrigin = data.Substring(13, 10).Trim();
-            FileCreationDate = DateOnly.ParseExact(data.Substring(23, 6).Trim(), "yyMMdd", CultureInfo.InvariantCulture);
-            FileCreationTime = TimeOnly.ParseExact(data.Substring(29, 4).Trim(), "HHmm", CultureInfo.InvariantCulture);
+            FileCreationDate = DateOnly.ParseExact(data.Substring(23, 6).Trim(), "yyMMdd");
+            FileCreationTime = TimeOnly.TryParseExact(data.Substring(29, 4).Trim(), "HHmm", out var time) ? time : null;
             FileIdModifier = data.Substring(33, 1).Trim()[0];
             ImmediateDestinationName = data.Substring(40, 23).Trim();
             ImmediateOriginName = data.Substring(63, 23).Trim();

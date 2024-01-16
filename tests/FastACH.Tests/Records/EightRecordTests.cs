@@ -5,16 +5,23 @@ namespace FastACH.Tests.Records
 {
     public class EightRecordTests
     {
+        [Fact]
+        public void Test()
+        {
+            var d = 5.5m;
+            var s = $"{d:0,12}";
+        }
+
         [Theory]
-        [InlineData("200", "Test", "", 4, 2, 3, 24691356, 123.51, 345.51)]
+        [InlineData(200, "Test", "", 4, 2, 3, 24691356, 123.51, 345.51)]
         public void ParseRecord(
-            string serviceClassCode,
+            uint serviceClassCode,
             string companyId,
             string authCode,
             uint batchNumber,
             int dfiId,
-            int entryAddendaCount,
-            int entryHash,
+            uint entryAddendaCount,
+            ulong entryHash,
             decimal debit,
             decimal credit)
         {

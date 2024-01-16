@@ -1,13 +1,11 @@
-﻿using FastACH.Models;
-
-namespace FastACH
+﻿namespace FastACH
 {
-    public class ConsoleWriter : ILineWriter
+    public class ConsoleWriter : StringWriter
     {
         private readonly ConsoleColor[] _colors;
         private int _colorIndex = 0;
 
-        protected ConsoleWriter(params ConsoleColor[] colors)
+        protected ConsoleWriter(params ConsoleColor[] colors): base(Console.Out)
         {
            _colors = colors;
         }
@@ -44,7 +42,8 @@ namespace FastACH
                 ConsoleColor.Gray,
                 ConsoleColor.Yellow,
                 ConsoleColor.Red,
-                ConsoleColor.Green
+                ConsoleColor.Green,
+                ConsoleColor.White
             );
         }
 
@@ -131,10 +130,10 @@ namespace FastACH
             );
         }
 
-        public void Write(string part)
+        public override void Write(string part)
         {
             Console.ForegroundColor = _colors[_colorIndex++];
-            Console.Write(part);
+            base.Write(part);
             Console.ResetColor();
         }
     }

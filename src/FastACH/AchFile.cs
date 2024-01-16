@@ -1,9 +1,11 @@
-﻿namespace FastACH.Models
+﻿using FastACH.Models;
+
+namespace FastACH
 {
     public class AchFile
     {
         private bool _shouldRecalculate = true;
-        private int _fileLineCount = 0;
+        private ulong _fileLineCount = 0;
 
         public AchFile()
         {
@@ -83,7 +85,7 @@
             WriteToStream(streamWriter, NineRecord, false);
 
             // write extra fillers so block count is even at 10
-            for (int i = 0; i < NineRecord.BlockCount * 10 - _fileLineCount; i++)
+            for (ulong i = 0; i < NineRecord.BlockCount * 10 - _fileLineCount; i++)
             {
                 streamWriter.WriteLine(new string('9', 94));
             }
@@ -105,12 +107,16 @@
         /// </summary>
         private void RecalculateFileTotals()
         {
-            NineRecord.BatchCount = BatchRecordList.Count;
-            NineRecord.BlockCount = (int)Math.Ceiling(_fileLineCount / 10.0);
-            NineRecord.EntryAddendaCount = BatchRecordList.Select(x => x.SixRecordList.Count()).Sum();
-            NineRecord.EntryHash = BatchRecordList.Select(x => x.EightRecord.EntryHash).Sum();
-            NineRecord.TotalCreditEntryDollarAmount = BatchRecordList.Select(x => x.SixRecordList.Where(y => DataFormatHelper.CreditCodes.Contains(y.TransactionCode)).Select(x => x.Amount).Sum()).Sum();
-            NineRecord.TotalDebitEntryDollarAmount = BatchRecordList.Select(x => x.SixRecordList.Where(y => DataFormatHelper.DebitCodes.Contains(y.TransactionCode)).Select(x => x.Amount).Sum()).Sum();
+            NineRecord.BatchCount = (uint)BatchRecordList.Count;
+            NineRecord.BlockCount = (uint)Math.Ceiling(_fileLineCount / 10.0);
+            NineRecord.EntryAddendaCount = (uint)BatchRecordList.Select(x => x.SixRecordList.Count()).Sum();
+            NineRecord.EntryHash = BatchRecordList
+                .Select(p => p.EightRecord.EntryHash)
+                .Aggregate((ulong)0, (a, b) => a + b);
+            NineRecord.TotalCreditEntryDollarAmount = BatchRecordList
+                .SelectMany(x => x.SixRecordList.Where(y => TransactionCodes.IsCredit(y.TransactionCode)).Select(x => x.Amount)).Sum();
+            NineRecord.TotalDebitEntryDollarAmount = BatchRecordList
+                .SelectMany(x => x.SixRecordList.Where(y => TransactionCodes.IsDebit(y.TransactionCode)).Select(x => x.Amount)).Sum();
         }
 
         /// <summary>
@@ -119,7 +125,7 @@
         public void OutputFileToConsole()
         {
             _fileLineCount++;
-            
+
             OneRecord.Write(ConsoleWriter.CreateForRecord(OneRecord));
             Console.WriteLine();
 
@@ -160,7 +166,7 @@
 
             Console.WriteLine();
             // write extra fillers so block count is even at 10
-            for (int i = 0; i < NineRecord.BlockCount * 10 - _fileLineCount; i++)
+            for (uint i = 0; i < NineRecord.BlockCount * 10 - _fileLineCount; i++)
             {
                 Console.WriteLine(new string('9', 94));
             }

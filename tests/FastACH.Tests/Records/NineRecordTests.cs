@@ -8,10 +8,10 @@ namespace FastACH.Tests.Records
         [Theory]
         [InlineData(2, 1, 3, 24691356, 123.51, 345.51)]
         public void ParseRecord(
-            int batchCount,
-            int blockCount,
-            int entryAddendaCount,
-            int entryHash,
+            uint batchCount,
+            uint blockCount,
+            uint entryAddendaCount,
+            ulong entryHash,
             decimal debit,
             decimal credit)
         {
