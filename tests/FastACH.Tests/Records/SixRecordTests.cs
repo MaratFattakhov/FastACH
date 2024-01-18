@@ -37,7 +37,7 @@ namespace FastACH.Tests.Records
                 DiscretionaryData = discretionaryData,
                 ReceiverIdentificationNumber = receiverIdentificationNumber,
                 ReceiverName = receiverName,
-                ReceivingDFINumber = receivingDFINumber,
+                ReceivingDFIID = receivingDFINumber,
                 TraceNumber = traceNumber.ToString(),
             });
         }

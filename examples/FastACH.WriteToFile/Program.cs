@@ -21,7 +21,7 @@ var achFile = new AchFile()
             ServiceClassCode = 200,
             CompanyName = "companyName",
             CompanyDiscretionaryData = "companyDiscretionary",
-            CompanyIdentification = "companyID",
+            CompanyId = "companyID",
             //StandardEntryClassCode = "PPD",
             CompanyEntryDescription = "EntryDescr",
             CompanyDescriptiveDate = new DateOnly(2011, 02, 03),
@@ -34,7 +34,7 @@ var achFile = new AchFile()
                     new SixRecord()
                     {
                         TransactionCode = 22,
-                        ReceivingDFINumber = 12345678,
+                        ReceivingDFIID = 12345678,
                         CheckDigit = '9',
                         DFIAccountNumber = "1313131313",
                         Amount = 22M,
@@ -50,7 +50,7 @@ var achFile = new AchFile()
                     new SixRecord()
                     {
                         TransactionCode = 27,
-                        ReceivingDFINumber = 12345678,
+                        ReceivingDFIID = 12345678,
                         CheckDigit = '9',
                         DFIAccountNumber = "1313131313",
                         Amount = 27M,

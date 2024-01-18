@@ -25,7 +25,7 @@
         public string CompanyDiscretionaryData { get; set; }
 
         // Position 41-50: Company Identification (alpha-numeric)
-        public string CompanyIdentification { get; set; }
+        public string CompanyId { get; set; }
 
         // Position 51-53: Standard Entry Class Code (alpha-numeric)
         public string StandardEntryClassCode { get; set; } = "PPD";
@@ -61,11 +61,11 @@
             UpdateAdendaSequenceCounters(adendaSequenceNumberGenerator);
             EightRecord.EntryAddendaCount = (uint)SixRecordList.Count + (uint)SixRecordList.Where(x => x.AddendaRecord != null).Count();
             EightRecord.EntryHash = SixRecordList
-                .Select(p => p.ReceivingDFINumber)
+                .Select(p => p.ReceivingDFIID)
                 .Aggregate((ulong)0, (a, b) => a + b);
             EightRecord.TotalCreditEntryDollarAmount = SixRecordList.Where(x => TransactionCodes.IsCredit(x.TransactionCode)).Sum(x => Math.Round(x.Amount, 2, MidpointRounding.AwayFromZero));
             EightRecord.TotalDebitEntryDollarAmount = SixRecordList.Where(x => TransactionCodes.IsDebit(x.TransactionCode)).Sum(x => Math.Round(x.Amount, 2, MidpointRounding.AwayFromZero));
-            EightRecord.CompanyIdentification = CompanyIdentification ?? string.Empty;
+            EightRecord.CompanyIdentification = CompanyId ?? string.Empty;
             EightRecord.OriginatingDFINumber = OriginatingDFIID ?? string.Empty;
         }
 
@@ -108,7 +108,7 @@
             writer.Write(ServiceClassCode, 3);
             writer.Write(CompanyName, 16);
             writer.Write(CompanyDiscretionaryData, 20);
-            writer.Write(CompanyIdentification, 10);
+            writer.Write(CompanyId, 10);
             writer.Write(StandardEntryClassCode, 3);
             writer.Write(CompanyEntryDescription, 10);
             writer.Write(CompanyDescriptiveDate);
@@ -129,7 +129,7 @@
             ServiceClassCode = uint.Parse(data.Substring(1, 3));
             CompanyName = data.Substring(4, 16).Trim();
             CompanyDiscretionaryData = data.Substring(20, 20).Trim();
-            CompanyIdentification = data.Substring(40, 10).Trim();
+            CompanyId = data.Substring(40, 10).Trim();
             StandardEntryClassCode = data.Substring(50, 3).Trim();
             CompanyEntryDescription = data.Substring(53, 10).Trim();
             CompanyDescriptiveDate = DateOnly.TryParseExact(data.Substring(63, 6), "yyMMdd", out var companyDescriptiveDate) ? companyDescriptiveDate : null;

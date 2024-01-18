@@ -35,7 +35,7 @@ namespace FastACH.Tests.Records
                 CompanyDescriptiveDate = DateOnly.ParseExact(companyDescriptiveDate, "yyMMdd"),
                 CompanyDiscretionaryData = companyDiscretionaryData,
                 CompanyEntryDescription = companyEntryDescription,
-                CompanyIdentification = companyId,
+                CompanyId = companyId,
                 CompanyName = companyName,
                 EffectiveEntryDate = DateOnly.ParseExact(effectiveEntryDate, "yyMMdd"),
                 OriginatingDFIID = originatingDFIID,

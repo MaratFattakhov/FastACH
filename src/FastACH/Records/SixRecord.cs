@@ -1,11 +1,18 @@
 ﻿namespace FastACH.Records
 {
+    /// <summary>
+    /// Represents an Entry Detail Record (6 record)
+    /// </summary>
     public class SixRecord : IRecord
     {
-        // Addenda record for the Detail 
+        /// <summary>
+        /// Addenda record for the Detail 
+        /// </summary>
         public SevenRecord? AddendaRecord { get; set; } = null;
 
-        // Position 1-1: Record Type Code (numeric)
+        /// <summary>
+        /// Position 1-1: Record Type Code (numeric)
+        /// </summary>
         public string RecordTypeCode => "6";
 
         /// <summary>
@@ -21,38 +28,56 @@
         /// </summary>
         public uint TransactionCode { get; set; }
 
-        // Position 4-11: Receiving DFI Identification Number (numeric)
-        public ulong ReceivingDFINumber { get; set; }
+        /// <summary>
+        /// Position 4-11: Receiving DFI Identification (numeric)
+        /// </summary>
+        public ulong ReceivingDFIID { get; set; }
 
-        // Position 12-22: Check Digit (numeric)
+        /// <summary>
+        /// Position 12-22: Check Digit (numeric)
+        /// </summary>
         public char CheckDigit { get; set; }
 
-        // Position 13-29: DFIAccount Number (alpha-numeric)
+        /// <summary>
+        /// Position 13-29: DFIAccount Number (alpha-numeric)
+        /// </summary>
         public string DFIAccountNumber { get; set; }
 
-        // Position 30-39: Amount (numeric)
+        /// <summary>
+        /// Position 30-39: Amount (numeric)
+        /// </summary>
         public decimal Amount { get; set; }
 
-        // Position 40-54: Receiver Identification Number (alpha-numeric)
+        /// <summary>
+        /// Position 40-54: Receiver Identification Number (alpha-numeric)
+        /// </summary>
         public string ReceiverIdentificationNumber { get; set; }
 
-        // Position 55-76: Receiver Name (alpha)
+        /// <summary>
+        /// Position 55-76: Receiver Name (alpha)
+        /// </summary>
         public string ReceiverName { get; set; }
 
-        // Position 77-78: Discretionary Data (alpha-numeric)
+        /// <summary>
+        /// Position 77-78: Discretionary Data (alpha-numeric)
+        /// </summary>
         public string DiscretionaryData { get; set; }
 
-        // Position 79-79: Addenda Record Indicator (numeric)
+        /// <summary>
+        /// Position 79-79: Addenda Record Indicator (numeric)
+        /// </summary>
         public bool AddendaRecordIndicator { get; set; }
 
-        // Position 80-94: Trace Number (numeric)
+        /// <summary>
+        /// Position 80-94: Trace Number (numeric)
+        /// </summary>
         public string TraceNumber { get; set; }
 
         public void Write(ILineWriter writer)
         {
             writer.Write(RecordTypeCode);
             writer.Write(TransactionCode, 2);
-            writer.Write(ReceivingDFINumber, 8);
+            writer.Write(ReceivingDFIID, 8);
             writer.Write(CheckDigit.ToString(), 1);
             writer.Write(DFIAccountNumber, 17);
             writer.Write((ulong)Math.Round(Amount * 100, MidpointRounding.AwayFromZero), 10);
@@ -71,7 +96,7 @@
             }
 
             TransactionCode = uint.Parse(data.Substring(1, 2));
-            ReceivingDFINumber = ulong.Parse(data.Substring(3, 8));
+            ReceivingDFIID = ulong.Parse(data.Substring(3, 8));
             CheckDigit = data.Substring(11, 1)[0];
             DFIAccountNumber = data.Substring(12, 17).Trim();
             Amount = decimal.Parse(data.Substring(29, 10)) / 100;
