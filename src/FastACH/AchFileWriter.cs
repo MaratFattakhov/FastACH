@@ -2,26 +2,19 @@
 {
     public class AchFileWriter
     {
-        private readonly Func<ulong> _batchNumberGenerator;
-        private readonly Func<string> _traceNumberGenerator;
-        private readonly uint _batchSize;
+        private readonly Func<ulong>? _batchNumberGenerator;
+        private readonly Func<string>? _traceNumberGenerator;
+        private readonly uint _batchSize = 10;
 
         public AchFileWriter()
         {
-            ulong batchNumber = 0;
-            _batchNumberGenerator = new Func<ulong>(() => ++batchNumber);
-
-            ulong traceNumber = 0;
-            _traceNumberGenerator = new Func<string>(
-                () => (++traceNumber).ToString().PadLeft(15, '0'));
-
-            _batchSize = 16;
+            
         }
 
         public AchFileWriter(
             Func<ulong> batchNumberGenerator,
             Func<string> traceNumberGenerator,
-            uint batchSize)
+            uint batchSize) : this()
         {
             _batchNumberGenerator = batchNumberGenerator;
             _traceNumberGenerator = traceNumberGenerator;
@@ -30,7 +23,7 @@
 
         public Task WriteToFile(AchFile achFile, string filePath)
         {
-            achFile.RecalculateTotals(_batchNumberGenerator, _traceNumberGenerator);
+            RecalculateTotals(achFile);
             using var stream = new FileStream(filePath, FileMode.Create);
             using var streamWriter = new StreamWriter(stream);
             var writer = new StringWriter(streamWriter);
@@ -40,7 +33,7 @@
 
         public void WriteToConsole(AchFile achFile)
         {
-            achFile.RecalculateTotals(_batchNumberGenerator, _traceNumberGenerator);
+            RecalculateTotals(achFile);
             WriteToStream(Console.Out, achFile, ConsoleWriter.CreateForRecord);
         }
 
@@ -84,6 +77,25 @@
             var lineWriter = getLineWriter(record);
             record.Write(lineWriter);
             writer.WriteLine();
+        }
+
+        private void RecalculateTotals(AchFile achFile)
+        {
+            achFile.RecalculateTotals(_batchNumberGenerator ?? GetDefaultBatchNumberGenerator(), _traceNumberGenerator ?? GetDefaultTraceNumberGenerator(achFile));
+        }
+
+        private Func<string> GetDefaultTraceNumberGenerator(AchFile achFile)
+        {
+            ulong traceNumber = 0;
+            return new Func<string>(
+                () => achFile.OneRecord.ImmediateDestination.PadLeft(8, ' ').Substring(0, 8) + (++traceNumber).ToString().PadLeft(7, '0'));
+        }
+
+        private Func<ulong> GetDefaultBatchNumberGenerator()
+        {
+            ulong batchNumber = 0;
+            return new Func<ulong>(
+                               () => ++batchNumber);
         }
     }
 }

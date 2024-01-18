@@ -27,9 +27,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".circleci", ".circleci", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{48808604-49A1-462F-AC55-491E0E299FBE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastACH.ReadToConsole", "examples\FastACH.ReadToConsole\FastACH.ReadToConsole.csproj", "{7DCF3A6C-60F7-4292-89E5-5D81E60417FE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastACH.ReadToConsole", "examples\FastACH.ReadToConsole\FastACH.ReadToConsole.csproj", "{7DCF3A6C-60F7-4292-89E5-5D81E60417FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastAch.ChoetlNacha", "examples\FastAch.ChoetlNacha\FastAch.ChoetlNacha.csproj", "{B74C8264-B9F8-49DA-87C2-79A7CAD50F1D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastAch.ChoetlNacha", "examples\FastAch.ChoetlNacha\FastAch.ChoetlNacha.csproj", "{B74C8264-B9F8-49DA-87C2-79A7CAD50F1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastACH.WriteToFile", "examples\FastACH.WriteToFile\FastACH.WriteToFile.csproj", "{407D7EC7-AD1B-4765-8ED7-9BF665E4037D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,6 +55,10 @@ Global
 		{B74C8264-B9F8-49DA-87C2-79A7CAD50F1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B74C8264-B9F8-49DA-87C2-79A7CAD50F1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B74C8264-B9F8-49DA-87C2-79A7CAD50F1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{407D7EC7-AD1B-4765-8ED7-9BF665E4037D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{407D7EC7-AD1B-4765-8ED7-9BF665E4037D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{407D7EC7-AD1B-4765-8ED7-9BF665E4037D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{407D7EC7-AD1B-4765-8ED7-9BF665E4037D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,6 +69,7 @@ Global
 		{9818770F-1D39-4CD6-862E-DCC1AB20CBAF} = {80F68839-BD77-4C1F-A647-FCE24D897569}
 		{7DCF3A6C-60F7-4292-89E5-5D81E60417FE} = {48808604-49A1-462F-AC55-491E0E299FBE}
 		{B74C8264-B9F8-49DA-87C2-79A7CAD50F1D} = {48808604-49A1-462F-AC55-491E0E299FBE}
+		{407D7EC7-AD1B-4765-8ED7-9BF665E4037D} = {48808604-49A1-462F-AC55-491E0E299FBE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FBBA2E05-4AB4-4619-9E7A-0ED55C7E6E8B}

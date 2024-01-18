@@ -3,12 +3,10 @@ using ChoETL.NACHA;
 
 uint i = 1;
 ChoNACHAConfiguration config = new ChoNACHAConfiguration();
+config.DestinationBankName = "PNC Bank";
 config.DestinationBankRoutingNumber = "123456789";
 config.OriginatingCompanyId = "123456789";
-config.DestinationBankName = "PNC Bank";
 config.OriginatingCompanyName = "Microsoft Inc.";
-config.ReferenceCode = "Internal Use Only.";
-config.BlockingFactor = 10;
 config.BatchNumber = 1;
 config.BatchNumberGenerator = delegate () { return i++; };
 config.BlockingFactor = 10;
@@ -27,17 +25,14 @@ using (var nachaWriter = new ChoNACHAWriter("..\\..\\..\\ACH.txt", config))
         companyName: "companyName",
         originatingDFIID: "DFINumber"))
     {
-        using (var entry1 = bw1.CreateDebitEntryDetail(22, "123456789", "1313131313", 22.505M, "ID Number", "ID Name", "Desc Data"))
+        using (var entry1 = bw1.CreateDebitEntryDetail(22, "123456789", "1313131313", 22.0M, "ID Number", "ID Name", "Desc Data"))
         {
-            entry1.CreateAddendaRecord("Monthly bill");
+            entry1.CreateAddendaRecord("Monthly bill", 5);
         }
-        using (var entry2 = bw1.CreateCreditEntryDetail(27, "123456789", "1313131313", 22.505M, "ID Number", "ID Name", "Desc Data"))
+        using (var entry2 = bw1.CreateCreditEntryDetail(27, "123456789", "1313131313", 27.0M, "ID Number", "ID Name", "Desc Data"))
         {
 
         }
-    }
-    using (var bw2 = nachaWriter.CreateBatch(200))
-    {
     }
 }
 

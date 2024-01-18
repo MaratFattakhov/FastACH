@@ -1,4 +1,4 @@
-﻿namespace FastACH.Models
+﻿namespace FastACH.Records
 {
     public class SevenRecord : IRecord
     {

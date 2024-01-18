@@ -1,6 +1,6 @@
-﻿namespace FastACH.Models
+﻿namespace FastACH.Records
 {
-    public class EightRecord: IRecord
+    public class EightRecord : IRecord
     {
         // Position 1-1: Record Type Code (numeric)
         public string RecordTypeCode => "8";
@@ -24,7 +24,7 @@
         public string CompanyIdentification { get; set; }
 
         // Position 55-73: Message Authentication Code (alpha-numeric)
-        public string MessageAuthenticationCode { get; set; }
+        public string MessageAuthenticationCode { get; set; } = string.Empty;
 
         // Position 74-79: Reserved (blank space)
         public string Reserved => "      ";
@@ -41,8 +41,8 @@
             writer.Write(ServiceClassCode, 3);
             writer.Write(EntryAddendaCount, 6);
             writer.Write(EntryHash % 10000000000, 10);
-            writer.Write((ulong)(TotalDebitEntryDollarAmount * 100), 12);
-            writer.Write((ulong)(TotalCreditEntryDollarAmount * 100), 12);
+            writer.Write((ulong)Math.Round(TotalDebitEntryDollarAmount * 100, MidpointRounding.AwayFromZero), 12);
+            writer.Write((ulong)Math.Round(TotalCreditEntryDollarAmount * 100, MidpointRounding.AwayFromZero), 12);
             writer.Write(CompanyIdentification, 10);
             writer.Write(MessageAuthenticationCode, 19);
             writer.Write(Reserved);

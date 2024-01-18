@@ -1,4 +1,4 @@
-﻿namespace FastACH.Models
+﻿namespace FastACH.Records
 {
     public class SixRecord : IRecord
     {
@@ -55,7 +55,7 @@
             writer.Write(ReceivingDFINumber, 8);
             writer.Write(CheckDigit.ToString(), 1);
             writer.Write(DFIAccountNumber, 17);
-            writer.Write((ulong)(Amount * 100), 10);
+            writer.Write((ulong)Math.Round(Amount * 100, MidpointRounding.AwayFromZero), 10);
             writer.Write(ReceiverIdentificationNumber, 15);
             writer.Write(ReceiverName, 22);
             writer.Write(DiscretionaryData, 2);
@@ -81,7 +81,7 @@
             AddendaRecordIndicator = data.Substring(78, 1) switch
             {
                 "0" => false,
-                "1"=> true,
+                "1" => true,
                 _ => throw new ArgumentException($"Invalid Addenda Record Indicator (6 record) value: Expected 0 or 1, Actual {data.Substring(78, 1)}"),
             };
             TraceNumber = data.Substring(79, 15).Trim();

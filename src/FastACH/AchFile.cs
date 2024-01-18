@@ -1,4 +1,4 @@
-﻿using FastACH.Models;
+﻿using FastACH.Records;
 
 namespace FastACH
 {
@@ -15,9 +15,12 @@ namespace FastACH
             Func<ulong> batchNumberGenerator,
             Func<string> traceNumberGenerator)
         {
+            var adendaSequenceCounter = 0;
+            var adendaSequenceNumberGenerator = new Func<uint>(() => (uint)++adendaSequenceCounter);
+
             foreach (var batchRecord in BatchRecordList)
             {
-                batchRecord.RecalculateTotals(batchNumberGenerator, traceNumberGenerator);
+                batchRecord.RecalculateTotals(batchNumberGenerator, traceNumberGenerator, adendaSequenceNumberGenerator);
             }
 
             var itemsCount = BatchRecordList.SelectMany(x => 
@@ -30,10 +33,8 @@ namespace FastACH
             NineRecord.EntryHash = BatchRecordList
                 .Select(p => p.EightRecord.EntryHash)
                 .Aggregate((ulong)0, (a, b) => a + b);
-            NineRecord.TotalCreditEntryDollarAmount = BatchRecordList
-                .SelectMany(x => x.SixRecordList.Where(y => TransactionCodes.IsCredit(y.TransactionCode)).Select(x => x.Amount)).Sum();
-            NineRecord.TotalDebitEntryDollarAmount = BatchRecordList
-                .SelectMany(x => x.SixRecordList.Where(y => TransactionCodes.IsDebit(y.TransactionCode)).Select(x => x.Amount)).Sum();
+            NineRecord.TotalCreditEntryDollarAmount = BatchRecordList.Sum(p => p.EightRecord.TotalCreditEntryDollarAmount);
+            NineRecord.TotalDebitEntryDollarAmount = BatchRecordList.Sum(p => p.EightRecord.TotalDebitEntryDollarAmount);
         }
     }
 }

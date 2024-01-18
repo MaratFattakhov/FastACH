@@ -1,4 +1,4 @@
-﻿namespace FastACH.Models
+﻿namespace FastACH.Records
 {
     public class NineRecord : IRecord
     {
@@ -33,8 +33,8 @@
             writer.Write(BlockCount, 6);
             writer.Write(EntryAddendaCount, 8);
             writer.Write(EntryHash % 10000000000, 10);
-            writer.Write((ulong)(TotalDebitEntryDollarAmount * 100), 12);
-            writer.Write((ulong)(TotalCreditEntryDollarAmount * 100), 12);
+            writer.Write((ulong)Math.Round(TotalDebitEntryDollarAmount * 100, MidpointRounding.AwayFromZero), 12);
+            writer.Write((ulong)Math.Round(TotalCreditEntryDollarAmount * 100, MidpointRounding.AwayFromZero), 12);
             writer.Write(Reserved);
         }
 

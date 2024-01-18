@@ -1,4 +1,4 @@
-using FastACH.Models;
+using FastACH.Records;
 using FluentAssertions;
 
 namespace FastACH.Tests.Records
@@ -6,7 +6,7 @@ namespace FastACH.Tests.Records
     public class FiveRecordTests
     {
         [Theory]
-        [InlineData(200, "My company", "Discretionary", "123456789", "PPD", "", "", "200102", "", '1', "12345678", 123)]
+        [InlineData(200, "My company", "Discretionary", "123456789", "PPD", "", "200102", "200102", "", '1', "12345678", 123)]
         public void ParseRecord(
             uint serviceClassCode,
             string companyName,
@@ -18,11 +18,11 @@ namespace FastACH.Tests.Records
             string effectiveEntryDate,
             string julianSettlementDate,
             char originatorStatusCode,
-            string originatorsDFINumber,
+            string originatingDFIID,
             uint batchNumber)
         {
             // Arrange
-            var s = $"5{serviceClassCode}{companyName, -16}{companyDiscretionaryData, -20}{companyId, -10}{standardEntryClassCode}{companyEntryDescription, -10}{companyDescriptiveDate, -6}{effectiveEntryDate}{julianSettlementDate, -3}{originatorStatusCode}{originatorsDFINumber, 8}{batchNumber:0000000}";
+            var s = $"5{serviceClassCode}{companyName, -16}{companyDiscretionaryData, -20}{companyId, -10}{standardEntryClassCode}{companyEntryDescription, -10}{companyDescriptiveDate}{effectiveEntryDate}{julianSettlementDate, -3}{originatorStatusCode}{originatingDFIID, 8}{batchNumber:0000000}";
             var record = new FiveRecord();
 
             // Act
@@ -32,13 +32,13 @@ namespace FastACH.Tests.Records
             record.Should().BeEquivalentTo(new FiveRecord()
             {
                 BatchNumber = batchNumber,
-                CompanyDescriptiveDate = companyDescriptiveDate,
+                CompanyDescriptiveDate = DateOnly.ParseExact(companyDescriptiveDate, "yyMMdd"),
                 CompanyDiscretionaryData = companyDiscretionaryData,
                 CompanyEntryDescription = companyEntryDescription,
                 CompanyIdentification = companyId,
                 CompanyName = companyName,
                 EffectiveEntryDate = DateOnly.ParseExact(effectiveEntryDate, "yyMMdd"),
-                OriginatorsDFINumber = originatorsDFINumber,
+                OriginatingDFIID = originatingDFIID,
                 OriginatorsStatusCode = originatorStatusCode,
                 ServiceClassCode = serviceClassCode,
                 JulianSettlementDate = julianSettlementDate,

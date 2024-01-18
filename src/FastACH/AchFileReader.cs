@@ -1,22 +1,18 @@
-﻿using FastACH.Models;
+﻿using FastACH.Records;
 
 namespace FastACH
 {
     public class AchFileReader
     {
-        public AchFileReader()
-        {
-        }
-
         /// <summary>
         /// Breaks file into objects, based on the NACHA file specification.
         /// </summary>
         public async Task<AchFile> Read(string filePath)
         {
             var achFile = new AchFile();
-            FiveRecord currentBatch = new();
+            FiveRecord? currentBatch = null;
 
-            using (StreamReader reader = new StreamReader(filePath))
+            using (StreamReader reader = new(filePath))
             {
                 string? line;
                 while ((line = await reader.ReadLineAsync()) != null)
@@ -38,18 +34,24 @@ namespace FastACH
                         case "6":
                             SixRecord sixRecord= new();
                             sixRecord.ParseRecord(line);
+                            if (currentBatch is null)
+                                throw new InvalidOperationException("No batch record found for entry record");
                             currentBatch.SixRecordList.Add(sixRecord);
                             break;
 
                         case "7":
                             SevenRecord sevenRecord= new();
                             sevenRecord.ParseRecord(line);
+                            if (currentBatch is null)
+                                throw new InvalidOperationException("No batch record found for entry record");
                             currentBatch.SixRecordList.Last().AddendaRecord = sevenRecord;
                             break;
 
                         case "8":
                             EightRecord eightRecord= new();
                             eightRecord.ParseRecord(line);
+                            if (currentBatch is null)
+                                throw new InvalidOperationException("No batch record found for entry record");
                             currentBatch.EightRecord = eightRecord;
                             achFile.BatchRecordList.Add(currentBatch);
                             currentBatch = new();

@@ -1,4 +1,4 @@
-using FastACH.Models;
+using FastACH.Records;
 using FluentAssertions;
 
 namespace FastACH.Tests.Records

@@ -16,6 +16,13 @@
 
         public void Write(string value, byte length)
         {
+            // todo: do we need this check?
+            //if (value.Length > length)
+            //    throw new InvalidOperationException($"Value {value} is too long for field length {length}");
+
+            if (value.Length > length)
+                value = value.Substring(0, length);
+
             Write(value.PadRight(length, ' '));
         }
 
