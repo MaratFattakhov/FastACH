@@ -51,16 +51,32 @@
         // Position 88-94: Batch Number (numeric)
         public ulong BatchNumber { get; set; }
 
-        public void RecalculateTotals(ulong counter)
+        public void RecalculateTotals(
+            Func<ulong> batchNumberGenerator,
+            Func<string> traceNumberGenerator)
         {
-            BatchNumber = counter;
-            EightRecord.BatchNumber = counter;
+            UpdateBatchNumbers(batchNumberGenerator);
+            UpdateTraceNumbers(traceNumberGenerator);
             EightRecord.EntryAddendaCount = (uint)SixRecordList.Count + (uint)SixRecordList.Where(x => x.AddendaRecord != null).Count();
             EightRecord.EntryHash = SixRecordList
                 .Select(p => p.ReceivingDFINumber)
                 .Aggregate((ulong)0, (a, b) => a + b);
             EightRecord.TotalCreditEntryDollarAmount = SixRecordList.Where(x => TransactionCodes.IsCredit(x.TransactionCode)).Sum(x => x.Amount);
             EightRecord.TotalDebitEntryDollarAmount = SixRecordList.Where(x => TransactionCodes.IsDebit(x.TransactionCode)).Sum(x => x.Amount);
+        }
+
+        public void UpdateBatchNumbers(Func<ulong> batchNumberGenerator)
+        {
+            BatchNumber = batchNumberGenerator();
+            EightRecord.BatchNumber = BatchNumber;
+        }
+
+        public void UpdateTraceNumbers(Func<string> traceNumberGenerator)
+        {
+            foreach (var sixRecord in SixRecordList)
+            {
+                sixRecord.TraceNumber = traceNumberGenerator();
+            }
         }
 
         public void Write(ILineWriter writer)

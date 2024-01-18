@@ -1,11 +1,15 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using FastACH;
+using System;
 
-var achFileService = new AchFileReader();
+var reader = new AchFileReader();
 
-var achFile = await achFileService.Read("ACH.txt");
+var achFile = await reader.Read("ACH.txt");
 
-achFile.OutputFileToConsole();
+var achFileWriter = new AchFileWriter();
+achFileWriter.WriteToConsole(achFile);
+
+Console.ReadLine();
 
 //var achFile = new AchFile()
 //{
@@ -54,4 +58,3 @@ achFile.OutputFileToConsole();
 //    }
 //};
 
-Console.ReadLine();
