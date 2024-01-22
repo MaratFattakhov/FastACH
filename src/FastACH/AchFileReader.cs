@@ -7,7 +7,7 @@ namespace FastACH
         /// <summary>
         /// Breaks file into objects, based on the NACHA file specification.
         /// </summary>
-        public async Task<AchFile> Read(string filePath)
+        public async Task<AchFile> Read(string filePath, CancellationToken cancellationToken = default)
         {
             var achFile = new AchFile();
             FiveRecord? currentBatch = null;
@@ -15,24 +15,24 @@ namespace FastACH
             using (StreamReader reader = new(filePath))
             {
                 string? line;
-                while ((line = await reader.ReadLineAsync()) != null)
+                while ((line = await reader.ReadLineAsync(cancellationToken)) != null)
                 {
                     switch (line.Substring(0, 1))
                     {
                         case "1":
-                            OneRecord oneRecord= new();
+                            OneRecord oneRecord = new();
                             oneRecord.ParseRecord(line);
                             achFile.OneRecord = oneRecord;
                             break;
 
                         case "5":
-                            FiveRecord fiveRecord= new();
+                            FiveRecord fiveRecord = new();
                             fiveRecord.ParseRecord(line);
                             currentBatch = fiveRecord;
                             break;
 
                         case "6":
-                            SixRecord sixRecord= new();
+                            SixRecord sixRecord = new();
                             sixRecord.ParseRecord(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
@@ -40,7 +40,7 @@ namespace FastACH
                             break;
 
                         case "7":
-                            SevenRecord sevenRecord= new();
+                            SevenRecord sevenRecord = new();
                             sevenRecord.ParseRecord(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
@@ -48,7 +48,7 @@ namespace FastACH
                             break;
 
                         case "8":
-                            EightRecord eightRecord= new();
+                            EightRecord eightRecord = new();
                             eightRecord.ParseRecord(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");

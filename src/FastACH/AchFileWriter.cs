@@ -8,7 +8,7 @@
 
         public AchFileWriter()
         {
-            
+
         }
 
         public AchFileWriter(
@@ -21,7 +21,7 @@
             _batchSize = batchSize;
         }
 
-        public Task WriteToFile(AchFile achFile, string filePath)
+        public Task WriteToFile(AchFile achFile, string filePath, CancellationToken cancellationToken = default)
         {
             RecalculateTotals(achFile);
             using var stream = new FileStream(filePath, FileMode.Create);
@@ -38,8 +38,8 @@
         }
 
         public void WriteToStream(
-            TextWriter writer, 
-            AchFile achFile, 
+            TextWriter writer,
+            AchFile achFile,
             Func<IRecord, ILineWriter> getLineWriter)
         {
             var lineNumber = 0;
