@@ -16,7 +16,7 @@ jobs:
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps 
     environment:
-      NUGET_PACK_VERSION: 0.0.6
+      NUGET_PACK_VERSION: 0.0.7
     steps:
       - add_ssh_keys:
           fingerprints:
