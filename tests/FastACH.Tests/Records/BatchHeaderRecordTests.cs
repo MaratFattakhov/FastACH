@@ -3,7 +3,7 @@ using FluentAssertions;
 
 namespace FastACH.Tests.Records
 {
-    public class FiveRecordTests
+    public class BatchHeaderRecordTests
     {
         [Theory]
         [InlineData(200, "My company", "Discretionary", "123456789", "PPD", "", "200102", "200102", "", '1', "12345678", 123)]
@@ -22,14 +22,14 @@ namespace FastACH.Tests.Records
             uint batchNumber)
         {
             // Arrange
-            var s = $"5{serviceClassCode}{companyName, -16}{companyDiscretionaryData, -20}{companyId, -10}{standardEntryClassCode}{companyEntryDescription, -10}{companyDescriptiveDate}{effectiveEntryDate}{julianSettlementDate, -3}{originatorStatusCode}{originatingDFIID, 8}{batchNumber:0000000}";
-            var record = new FiveRecord();
+            var s = $"5{serviceClassCode}{companyName,-16}{companyDiscretionaryData,-20}{companyId,-10}{standardEntryClassCode}{companyEntryDescription,-10}{companyDescriptiveDate}{effectiveEntryDate}{julianSettlementDate,-3}{originatorStatusCode}{originatingDFIID,8}{batchNumber:0000000}";
+            var record = new BatchHeaderRecord();
 
             // Act
             record.ParseRecord(s);
 
             // Assert
-            record.Should().BeEquivalentTo(new FiveRecord()
+            record.Should().BeEquivalentTo(new BatchHeaderRecord()
             {
                 BatchNumber = batchNumber,
                 CompanyDescriptiveDate = DateOnly.ParseExact(companyDescriptiveDate, "yyMMdd"),

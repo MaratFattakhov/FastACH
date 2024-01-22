@@ -1,6 +1,6 @@
 ﻿namespace FastACH.Records
 {
-    public class EightRecord : IRecord
+    public class BatchControlRecord : IRecord
     {
         // Position 1-1: Record Type Code (numeric)
         public string RecordTypeCode => "8";

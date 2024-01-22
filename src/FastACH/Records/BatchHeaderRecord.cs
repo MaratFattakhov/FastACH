@@ -1,12 +1,7 @@
 ﻿namespace FastACH.Records
 {
-    public class FiveRecord : IRecord
+    public class BatchHeaderRecord : IRecord
     {
-        // List of Tranasctions for this Batch
-        public List<SixRecord> SixRecordList = new();
-
-        public EightRecord EightRecord = new();
-
         // Position 1-1: Record Type Code (numeric)
         public string RecordTypeCode => "5";
 
@@ -50,57 +45,6 @@
 
         // Position 88-94: Batch Number (numeric)
         public ulong BatchNumber { get; set; }
-
-        public void RecalculateTotals(
-            Func<ulong> batchNumberGenerator,
-            Func<string> traceNumberGenerator,
-            Func<uint> adendaSequenceNumberGenerator)
-        {
-            UpdateBatchNumbers(batchNumberGenerator);
-            UpdateTraceNumbers(traceNumberGenerator);
-            UpdateAdendaSequenceCounters(adendaSequenceNumberGenerator);
-            EightRecord.EntryAddendaCount = (uint)SixRecordList.Count + (uint)SixRecordList.Where(x => x.AddendaRecord != null).Count();
-            EightRecord.EntryHash = SixRecordList
-                .Select(p => p.ReceivingDFIID)
-                .Aggregate((ulong)0, (a, b) => a + b);
-            EightRecord.TotalCreditEntryDollarAmount = SixRecordList.Where(x => TransactionCodes.IsCredit(x.TransactionCode)).Sum(x => Math.Round(x.Amount, 2, MidpointRounding.AwayFromZero));
-            EightRecord.TotalDebitEntryDollarAmount = SixRecordList.Where(x => TransactionCodes.IsDebit(x.TransactionCode)).Sum(x => Math.Round(x.Amount, 2, MidpointRounding.AwayFromZero));
-            EightRecord.CompanyIdentification = CompanyId ?? string.Empty;
-            EightRecord.OriginatingDFINumber = OriginatingDFIID ?? string.Empty;
-        }
-
-        public void UpdateAdendaSequenceCounters(Func<uint> adendaSequenceNumberGenerator)
-        {
-            foreach (var sixRecord in SixRecordList)
-            {
-
-                if (sixRecord.AddendaRecordIndicator && sixRecord.AddendaRecord != null)
-                {
-                    var counter = adendaSequenceNumberGenerator();
-                    sixRecord.AddendaRecord.AddendaSequenceNumber = counter;
-                }
-            }
-        }
-
-        public void UpdateBatchNumbers(Func<ulong> batchNumberGenerator)
-        {
-            BatchNumber = batchNumberGenerator();
-            EightRecord.BatchNumber = BatchNumber;
-        }
-
-        public void UpdateTraceNumbers(Func<string> traceNumberGenerator)
-        {
-            foreach (var sixRecord in SixRecordList)
-            {
-                sixRecord.TraceNumber = traceNumberGenerator();
-
-                if (sixRecord.AddendaRecordIndicator && sixRecord.AddendaRecord != null)
-                {
-                    sixRecord.AddendaRecord.EntryDetailSequenceNumber = ulong.Parse(
-                        sixRecord.TraceNumber.Substring(sixRecord.TraceNumber.Length - 7, 7));
-                }
-            }
-        }
 
         public void Write(ILineWriter writer)
         {

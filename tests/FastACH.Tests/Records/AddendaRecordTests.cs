@@ -3,7 +3,7 @@ using FluentAssertions;
 
 namespace FastACH.Tests.Records
 {
-    public class SevenRecordTests
+    public class AddendaRecordTests
     {
         [Theory]
         [InlineData("Monthly bill", 1, 1)]
@@ -14,13 +14,13 @@ namespace FastACH.Tests.Records
         { 
             // Arrange
             var s = $"705{addendaInformation,-80}{addendaSequenceNumber:0000}{entryDetailSequenceNumber:0000000}";
-            var record = new SevenRecord();
+            var record = new AddendaRecord();
 
             // Act
             record.ParseRecord(s);
 
             // Assert
-            record.Should().BeEquivalentTo(new SevenRecord()
+            record.Should().BeEquivalentTo(new AddendaRecord()
             {
                 AddendaInformation = addendaInformation,
                 AddendaSequenceNumber = addendaSequenceNumber,

@@ -3,7 +3,7 @@ using FastACH.Records;
 
 var achFile = new AchFile()
 {
-    OneRecord = new OneRecord()
+    OneRecord = new FileHeaderRecord()
     {
         ImmediateDestination = "123456789",
         ImmediateOrigin = "123456789",
@@ -16,22 +16,24 @@ var achFile = new AchFile()
     },
     BatchRecordList =
     {
-        new FiveRecord()
+        new BatchRecord()
         {
-            ServiceClassCode = 200,
-            CompanyName = "companyName",
-            CompanyDiscretionaryData = "companyDiscretionary",
-            CompanyId = "companyID",
-            //StandardEntryClassCode = "PPD",
-            CompanyEntryDescription = "EntryDescr",
-            CompanyDescriptiveDate = new DateOnly(2011, 02, 03),
-            EffectiveEntryDate = new DateOnly(2011, 01, 02),
-            //JulianSettlementDate = DateTime.Now.ToString("YYMMDD"),
-            //OriginatorsStatusCode = '1',
-            OriginatingDFIID = "DFINumber",
-            SixRecordList = new List<SixRecord>
+            BatchHeader = new BatchHeaderRecord()
+            {
+                ServiceClassCode = 200,
+                CompanyName = "companyName",
+                CompanyDiscretionaryData = "companyDiscretionary",
+                CompanyId = "companyID",
+                CompanyEntryDescription = "EntryDescr",
+                CompanyDescriptiveDate = new DateOnly(2011, 02, 03),
+                EffectiveEntryDate = new DateOnly(2011, 01, 02),
+                OriginatingDFIID = "DFINumber"
+            },
+            TransactionDetailsList =
+            {
+                new TransactionDetails
                 {
-                    new SixRecord()
+                    EntryDetail = new EntryDetailRecord()
                     {
                         TransactionCode = 22,
                         ReceivingDFIID = 12345678,
@@ -42,12 +44,15 @@ var achFile = new AchFile()
                         ReceiverName = "ID Name",
                         DiscretionaryData = "Desc Data",
                         AddendaRecordIndicator = true,
-                        AddendaRecord = new SevenRecord()
-                        {
-                            AddendaInformation = "Monthly bill"
-                        }
                     },
-                    new SixRecord()
+                    Addenda = new AddendaRecord()
+                    {
+                        AddendaInformation = "Monthly bill"
+                    }
+                },
+                new TransactionDetails()
+                {
+                    EntryDetail = new EntryDetailRecord()
                     {
                         TransactionCode = 27,
                         ReceivingDFIID = 12345678,
@@ -56,9 +61,12 @@ var achFile = new AchFile()
                         Amount = 27M,
                         ReceiverIdentificationNumber = "ID Number",
                         ReceiverName = "ID Name",
-                        DiscretionaryData = "Desc Data"
-                    }
-                },
+                        DiscretionaryData = "Desc Data",
+                        AddendaRecordIndicator = false,
+                    },
+                    Addenda = null
+                }
+            }
         }
     }
 };

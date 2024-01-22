@@ -3,13 +3,8 @@
     /// <summary>
     /// Represents an Entry Detail Record (6 record)
     /// </summary>
-    public class SixRecord : IRecord
+    public class EntryDetailRecord : IRecord
     {
-        /// <summary>
-        /// Addenda record for the Detail 
-        /// </summary>
-        public SevenRecord? AddendaRecord { get; set; } = null;
-
         /// <summary>
         /// Position 1-1: Record Type Code (numeric)
         /// </summary>

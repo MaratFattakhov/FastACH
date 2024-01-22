@@ -47,19 +47,19 @@
 
             foreach (var batchRecord in achFile.BatchRecordList)
             {
-                WriteToStream(writer, batchRecord, getLineWriter, ref lineNumber);
+                WriteToStream(writer, batchRecord.BatchHeader, getLineWriter, ref lineNumber);
 
-                foreach (var batchDetailRecord in batchRecord.SixRecordList)
+                foreach (var transactionDetails in batchRecord.TransactionDetailsList)
                 {
-                    WriteToStream(writer, batchDetailRecord, getLineWriter, ref lineNumber);
+                    WriteToStream(writer, transactionDetails.EntryDetail, getLineWriter, ref lineNumber);
 
-                    if (batchDetailRecord.AddendaRecord != null)
+                    if (transactionDetails.Addenda != null)
                     {
-                        WriteToStream(writer, batchDetailRecord.AddendaRecord, getLineWriter, ref lineNumber);
+                        WriteToStream(writer, transactionDetails.Addenda, getLineWriter, ref lineNumber);
                     }
                 }
 
-                WriteToStream(writer, batchRecord.EightRecord, getLineWriter, ref lineNumber);
+                WriteToStream(writer, batchRecord.BatchControl, getLineWriter, ref lineNumber);
             }
 
             WriteToStream(writer, achFile.NineRecord, getLineWriter, ref lineNumber);

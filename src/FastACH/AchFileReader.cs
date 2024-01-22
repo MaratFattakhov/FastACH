@@ -10,7 +10,7 @@ namespace FastACH
         public async Task<AchFile> Read(string filePath, CancellationToken cancellationToken = default)
         {
             var achFile = new AchFile();
-            FiveRecord? currentBatch = null;
+            BatchRecord? currentBatch = null;
 
             using (StreamReader reader = new(filePath))
             {
@@ -20,47 +20,47 @@ namespace FastACH
                     switch (line.Substring(0, 1))
                     {
                         case "1":
-                            OneRecord oneRecord = new();
+                            FileHeaderRecord oneRecord = new();
                             oneRecord.ParseRecord(line);
                             achFile.OneRecord = oneRecord;
                             break;
 
                         case "5":
-                            FiveRecord fiveRecord = new();
+                            BatchHeaderRecord fiveRecord = new();
                             fiveRecord.ParseRecord(line);
-                            currentBatch = fiveRecord;
+                            currentBatch = new BatchRecord() { BatchHeader = fiveRecord };
                             break;
 
                         case "6":
-                            SixRecord sixRecord = new();
+                            EntryDetailRecord sixRecord = new();
                             sixRecord.ParseRecord(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
-                            currentBatch.SixRecordList.Add(sixRecord);
+                            var transactionDetails = new TransactionDetails() { EntryDetail = sixRecord, Addenda = null };
+                            currentBatch.TransactionDetailsList.Add(transactionDetails);
                             break;
 
                         case "7":
-                            SevenRecord sevenRecord = new();
+                            AddendaRecord sevenRecord = new();
                             sevenRecord.ParseRecord(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
-                            currentBatch.SixRecordList.Last().AddendaRecord = sevenRecord;
+                            currentBatch.TransactionDetailsList.Last().Addenda = sevenRecord;
                             break;
 
                         case "8":
-                            EightRecord eightRecord = new();
+                            BatchControlRecord eightRecord = new();
                             eightRecord.ParseRecord(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
-                            currentBatch.EightRecord = eightRecord;
+                            currentBatch.BatchControl = eightRecord;
                             achFile.BatchRecordList.Add(currentBatch);
-                            currentBatch = new();
                             break;
 
                         case "9":
                             if (!line.StartsWith("999999999999999999999999"))
                             {
-                                NineRecord nineRecord = new();
+                                FileControlRecord nineRecord = new();
                                 nineRecord.ParseRecord(line);
                                 achFile.NineRecord = nineRecord;
                             }

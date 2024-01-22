@@ -3,7 +3,7 @@ using FluentAssertions;
 
 namespace FastACH.Tests.Records
 {
-    public class EightRecordTests
+    public class BatchControlRecordTests
     {
         [Theory]
         [InlineData(200, "Test", "", 4, 2, 3, 24691356, 123.51, 345.51)]
@@ -19,18 +19,18 @@ namespace FastACH.Tests.Records
             decimal credit)
         {
             // Arrange
-            var s = $"8{serviceClassCode}{entryAddendaCount,6}{entryHash,10}{(uint)(debit * 100),12}{(uint)(credit * 100),12}{companyId, 10}{authCode, 19}      {dfiId, 8}{batchNumber, 7}";
-            var record = new EightRecord();
+            var s = $"8{serviceClassCode}{entryAddendaCount,6}{entryHash,10}{(uint)(debit * 100),12}{(uint)(credit * 100),12}{companyId,10}{authCode,19}      {dfiId,8}{batchNumber,7}";
+            var record = new BatchControlRecord();
 
             // Act
             record.ParseRecord(s);
 
             // Assert
-            record.Should().BeEquivalentTo(new EightRecord()
+            record.Should().BeEquivalentTo(new BatchControlRecord()
             {
                 ServiceClassCode = serviceClassCode,
                 CompanyIdentification = companyId,
-                MessageAuthenticationCode = authCode, 
+                MessageAuthenticationCode = authCode,
                 BatchNumber = batchNumber,
                 OriginatingDFINumber = dfiId.ToString(),
                 EntryAddendaCount = entryAddendaCount,

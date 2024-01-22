@@ -33,10 +33,10 @@ jobs:
           command: dotnet test --no-restore --no-build --configuration Release
       - run:
           name: "Create Nuget package"
-          command: dotnet pack --no-restore --no-build --include-symbols --configuration Release --output package -p:PackageVersion=$env:NUGET_PACK_VERSION
+          command: dotnet pack --no-restore --no-build --include-symbols --configuration Release --output package -p:PackageVersion=$env:NUGET_PACK_VERSION.$env:CIRCLE_BUILD_NUM
       - run:
           name: "Pushing nuget package"
-          command: dotnet nuget push package\FastACH.$env:NUGET_PACK_VERSION.nupkg --skip-duplicate -s https://api.nuget.org/v3/index.json -k $env:NUGET_API_KEY
+          command: dotnet nuget push package\FastACH.$env:NUGET_PACK_VERSION.$env:CIRCLE_BUILD_NUM.nupkg --skip-duplicate -s https://api.nuget.org/v3/index.json -k $env:NUGET_API_KEY
 workflows:
   Build-and-Publish:
     jobs:

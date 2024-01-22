@@ -3,7 +3,7 @@ using FluentAssertions;
 
 namespace FastACH.Tests.Records
 {
-    public class OneRecordTests
+    public class FileHeaderRecordTests
     {
         [Theory]
         [InlineData("1234567890", "1234567890", "240110", "1454", 'A', "MyBank", "My Company", "00000000")]
@@ -18,14 +18,14 @@ namespace FastACH.Tests.Records
             string referenceCode)
         {
             // Arrange
-            var s = $"101{immediateDestination, 10}{immediateOrigin, 10}{fileCreationDate}{fileCreationTime}{fileIdModifier}094101{immediateDestinationName, -23}{immediateOriginName, -23}{referenceCode, -8}";
-            var record = new OneRecord();
+            var s = $"101{immediateDestination,10}{immediateOrigin,10}{fileCreationDate}{fileCreationTime}{fileIdModifier}094101{immediateDestinationName,-23}{immediateOriginName,-23}{referenceCode,-8}";
+            var record = new FileHeaderRecord();
 
             // Act
             record.ParseRecord(s);
 
             // Assert
-            record.Should().BeEquivalentTo(new OneRecord
+            record.Should().BeEquivalentTo(new FileHeaderRecord
             {
                 ImmediateDestination = immediateDestination,
                 ImmediateOrigin = immediateOrigin,
