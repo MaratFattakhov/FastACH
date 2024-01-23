@@ -4,7 +4,7 @@
     {
         private readonly Func<ulong>? _batchNumberGenerator;
         private readonly Func<string>? _traceNumberGenerator;
-        private readonly uint _batchSize = 10;
+        private readonly uint _blockingFactor = 10;
 
         public AchFileWriter()
         {
@@ -13,12 +13,10 @@
 
         public AchFileWriter(
             Func<ulong> batchNumberGenerator,
-            Func<string> traceNumberGenerator,
-            uint batchSize) : this()
+            Func<string> traceNumberGenerator) : this()
         {
             _batchNumberGenerator = batchNumberGenerator;
             _traceNumberGenerator = traceNumberGenerator;
-            _batchSize = batchSize;
         }
 
         public Task WriteToFile(AchFile achFile, string filePath, CancellationToken cancellationToken = default)
@@ -65,7 +63,7 @@
             WriteToStream(writer, achFile.NineRecord, getLineWriter, ref lineNumber);
 
             // write extra fillers so block count is even at batch size, default=10
-            for (long i = 0; i < achFile.NineRecord.BlockCount * _batchSize - lineNumber; i++)
+            for (long i = lineNumber; i < achFile.NineRecord.BlockCount * _blockingFactor; i++)
             {
                 writer.WriteLine(new string('9', 94));
             }

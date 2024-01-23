@@ -24,12 +24,13 @@ namespace FastACH
             }
 
             var itemsCount = BatchRecordList.SelectMany(x =>
-                x.TransactionDetailsList.Select(p => p.EntryDetail.AddendaRecordIndicator ? 2 : 1)).Sum()
-                + BatchRecordList.Count * 2;
+                x.TransactionDetailsList.Select(p => p.Addenda is not null ? 2 : 1)).Sum()
+                + BatchRecordList.Count * 2 // 2 for batch header and batch control
+                + 2; // 2 for file header and file control
 
             NineRecord.BatchCount = (uint)BatchRecordList.Count;
             NineRecord.BlockCount = (uint)Math.Ceiling(itemsCount / 10.0);
-            NineRecord.EntryAddendaCount = (uint)BatchRecordList.Select(x => x.TransactionDetailsList.Count()).Sum();
+            NineRecord.EntryAddendaCount = (uint)BatchRecordList.Select(x => (int)x.BatchControl.EntryAddendaCount).Sum();
             NineRecord.EntryHash = BatchRecordList
                 .Select(p => p.BatchControl.EntryHash)
                 .Aggregate((ulong)0, (a, b) => a + b);
