@@ -43,6 +43,7 @@ namespace FastACH
             Func<string> traceNumberGenerator,
             Func<uint> adendaSequenceNumberGenerator)
         {
+            batch.BatchControl.ServiceClassCode = batch.BatchHeader.ServiceClassCode;
             UpdateBatchNumbers(batch, batchNumberGenerator);
             UpdateTraceNumbers(batch, traceNumberGenerator);
             UpdateAdendaSequenceCounters(batch, adendaSequenceNumberGenerator);
