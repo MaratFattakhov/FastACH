@@ -56,7 +56,7 @@
         /// <summary>
         /// Position 77-78: Discretionary Data (alpha-numeric)
         /// </summary>
-        public string DiscretionaryData { get; set; }
+        public string? DiscretionaryData { get; set; }
 
         /// <summary>
         /// Position 79-79: Addenda Record Indicator (numeric)
@@ -78,7 +78,7 @@
             writer.Write((ulong)Math.Round(Amount * 100, MidpointRounding.AwayFromZero), 10);
             writer.Write(ReceiverIdentificationNumber, 15);
             writer.Write(ReceiverName, 22);
-            writer.Write(DiscretionaryData, 2);
+            writer.Write(DiscretionaryData ?? string.Empty, 2);
             writer.Write(AddendaRecordIndicator ? "1" : "0", 1);
             writer.Write(TraceNumber, 15);
         }
