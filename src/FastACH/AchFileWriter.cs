@@ -60,21 +60,28 @@
                 WriteToStream(writer, batchRecord.BatchControl, getLineWriter, ref lineNumber);
             }
 
-            WriteToStream(writer, achFile.NineRecord, getLineWriter, ref lineNumber);
+            WriteToStream(writer, achFile.NineRecord, getLineWriter, ref lineNumber, false);
 
             // write extra fillers so block count is even at batch size, default=10
             for (long i = lineNumber; i < achFile.NineRecord.BlockCount * _blockingFactor; i++)
             {
-                writer.WriteLine(new string('9', 94));
+                writer.WriteLine();
+                writer.Write(new string('9', 94));
             }
         }
 
-        private void WriteToStream(TextWriter writer, IRecord record, Func<IRecord, ILineWriter> getLineWriter, ref int lineNumber)
+        private void WriteToStream(
+            TextWriter writer,
+            IRecord record,
+            Func<IRecord, ILineWriter> getLineWriter,
+            ref int lineNumber,
+            bool newLine = true)
         {
             lineNumber++;
             var lineWriter = getLineWriter(record);
             record.Write(lineWriter);
-            writer.WriteLine();
+
+            if (newLine) writer.WriteLine();
         }
 
         private void RecalculateTotals(AchFile achFile)
