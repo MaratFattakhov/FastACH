@@ -11,12 +11,14 @@ namespace FastACH
         {
             var achFile = new AchFile();
             BatchRecord? currentBatch = null;
-
-            using (StreamReader reader = new(filePath))
+            uint lineNumber = 0;
+            try
             {
+                using StreamReader reader = new(filePath);
                 string? line;
                 while ((line = await reader.ReadLineAsync(cancellationToken)) != null)
                 {
+                    lineNumber++;
                     switch (line.Substring(0, 1))
                     {
                         case "1":
@@ -70,6 +72,10 @@ namespace FastACH
                             break;
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                throw new AchFileReadingException(lineNumber, ex);
             }
 
             return achFile;

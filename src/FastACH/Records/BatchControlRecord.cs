@@ -9,7 +9,7 @@
         public uint ServiceClassCode { get; set; }
 
         // Position 5-10: Entry/Addenda Count (numeric)
-        public uint EntryAddendaCount { get; set; }
+        public ulong EntryAddendaCount { get; set; }
 
         // Position 11-20: Entry Hash (numeric)
         public ulong EntryHash { get; set; }
@@ -58,8 +58,8 @@
             }
 
             ServiceClassCode = uint.Parse(data.Substring(1, 3));
-            EntryAddendaCount = uint.Parse(data.Substring(4, 6));
-            EntryHash = uint.Parse(data.Substring(10, 10));
+            EntryAddendaCount = ulong.Parse(data.Substring(4, 6));
+            EntryHash = ulong.Parse(data.Substring(10, 10));
             TotalDebitEntryDollarAmount = decimal.Parse(data.Substring(20, 12)) / 100;
             TotalCreditEntryDollarAmount = decimal.Parse(data.Substring(32, 12)) / 100;
             CompanyIdentification = data.Substring(44, 10).Trim();
