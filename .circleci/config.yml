@@ -16,7 +16,7 @@ jobs:
     # Add steps to the job
     # See: https://circleci.com/docs/configuration-reference/#steps 
     environment:
-      NUGET_PACK_VERSION: 0.0.10
+      NUGET_PACK_VERSION: 0.0.11
     steps:
       - add_ssh_keys:
           fingerprints:
@@ -33,7 +33,7 @@ jobs:
           command: dotnet test --no-restore --no-build --configuration Release
       - run:
           name: "Create Nuget package"
-          command: dotnet pack --no-restore --no-build --include-symbols --configuration Release --output package -p:PackageVersion=$env:NUGET_PACK_VERSION.$env:CIRCLE_BUILD_NUM
+          command: dotnet pack src\FastACH\FastACH.csproj --no-restore --no-build --include-symbols --configuration Release --output package -p:PackageVersion=$env:NUGET_PACK_VERSION.$env:CIRCLE_BUILD_NUM
       - run:
           name: "Pushing nuget package"
           command: dotnet nuget push package\FastACH.$env:NUGET_PACK_VERSION.$env:CIRCLE_BUILD_NUM.nupkg --skip-duplicate -s https://api.nuget.org/v3/index.json -k $env:NUGET_API_KEY
