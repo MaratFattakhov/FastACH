@@ -9,7 +9,7 @@
             _streamWriter = streamWriter;
         }
 
-        public virtual void Write(string value)
+        protected virtual void Write(string value)
         {
             _streamWriter.Write(value);
         }

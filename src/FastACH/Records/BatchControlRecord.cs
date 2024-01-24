@@ -37,7 +37,7 @@
 
         public void Write(ILineWriter writer)
         {
-            writer.Write(RecordTypeCode);
+            writer.Write(RecordTypeCode, 1);
             writer.Write(ServiceClassCode, 3);
             writer.Write(EntryAddendaCount, 6);
             writer.Write(EntryHash % 10000000000, 10);
@@ -45,7 +45,7 @@
             writer.Write((ulong)Math.Round(TotalCreditEntryDollarAmount * 100, MidpointRounding.AwayFromZero), 12);
             writer.Write(CompanyIdentification, 10);
             writer.Write(MessageAuthenticationCode, 19);
-            writer.Write(Reserved);
+            writer.Write(Reserved, 6);
             writer.Write(OriginatingDFINumber, 8);
             writer.Write(BatchNumber, 7);
         }

@@ -48,7 +48,7 @@
 
         public void Write(ILineWriter writer)
         {
-            writer.Write(RecordTypeCode);
+            writer.Write(RecordTypeCode, 1);
             writer.Write(ServiceClassCode, 3);
             writer.Write(CompanyName, 16);
             writer.Write(CompanyDiscretionaryData, 20);

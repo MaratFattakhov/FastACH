@@ -25,7 +25,7 @@
 
         public void Write(ILineWriter writer)
         {
-            writer.Write(RecordTypeCode);
+            writer.Write(RecordTypeCode, 1);
             writer.Write(AddendaTypeCode, 2);
             writer.Write(AddendaInformation, 80);
             writer.Write(AddendaSequenceNumber, 4);

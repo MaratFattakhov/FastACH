@@ -11,12 +11,12 @@ namespace FastACH.Tests
             var target = new AchFileReader();
 
             // Act
-            var actual = await target.Read("ACH.txt");
+            var actual = await target.Read("..\\..\\..\\ACH.txt");
 
             // Assert
             actual.Should().NotBeNull();
             actual.OneRecord.Should().NotBeNull();
             actual.BatchRecordList.Should().NotBeNull();
-        }   
+        }
     }
 }

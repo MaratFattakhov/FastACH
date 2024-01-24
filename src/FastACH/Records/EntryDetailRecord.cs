@@ -70,7 +70,7 @@
 
         public void Write(ILineWriter writer)
         {
-            writer.Write(RecordTypeCode);
+            writer.Write(RecordTypeCode, 1);
             writer.Write(TransactionCode, 2);
             writer.Write(ReceivingDFIID, 8);
             writer.Write(CheckDigit.ToString(), 1);

@@ -28,14 +28,14 @@
 
         public void Write(ILineWriter writer)
         {
-            writer.Write(RecordTypeCode);
+            writer.Write(RecordTypeCode, 1);
             writer.Write(BatchCount, 6);
             writer.Write(BlockCount, 6);
             writer.Write(EntryAddendaCount, 8);
             writer.Write(EntryHash % 10000000000, 10);
             writer.Write((ulong)Math.Round(TotalDebitEntryDollarAmount * 100, MidpointRounding.AwayFromZero), 12);
             writer.Write((ulong)Math.Round(TotalCreditEntryDollarAmount * 100, MidpointRounding.AwayFromZero), 12);
-            writer.Write(Reserved);
+            writer.Write(Reserved, 39);
         }
 
         public void ParseRecord(string data)

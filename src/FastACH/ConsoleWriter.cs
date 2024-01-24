@@ -5,9 +5,9 @@
         private readonly ConsoleColor[] _colors;
         private int _colorIndex = 0;
 
-        protected ConsoleWriter(params ConsoleColor[] colors): base(Console.Out)
+        protected ConsoleWriter(params ConsoleColor[] colors) : base(Console.Out)
         {
-           _colors = colors;
+            _colors = colors;
         }
 
         public static ConsoleWriter CreateForRecord(IRecord record)
@@ -130,7 +130,7 @@
             );
         }
 
-        public override void Write(string part)
+        protected override void Write(string part)
         {
             Console.ForegroundColor = _colors[_colorIndex++];
             base.Write(part);

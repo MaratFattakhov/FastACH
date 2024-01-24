@@ -43,10 +43,10 @@
 
         public void Write(ILineWriter writer)
         {
-            writer.Write(RecordTypeCode);
-            writer.Write(PriorityCode);
-            writer.Write(ImmediateDestination, 10);
-            writer.Write(ImmediateOrigin, 10);
+            writer.Write(RecordTypeCode, 1);
+            writer.Write(PriorityCode, 2);
+            writer.Write(ImmediateDestination.PadLeft(10, ' '), 10);
+            writer.Write(ImmediateOrigin.PadLeft(10, ' '), 10);
             writer.Write(FileCreationDate);
             writer.Write(FileCreationTime);
             writer.Write(FileIdModifier.ToString(), 1);
