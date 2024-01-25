@@ -24,7 +24,7 @@ namespace FastACH
                         case "1":
                             FileHeaderRecord oneRecord = new();
                             oneRecord.ParseRecord(line);
-                            achFile.OneRecord = oneRecord;
+                            achFile.FileHeader = oneRecord;
                             break;
 
                         case "5":
@@ -64,7 +64,7 @@ namespace FastACH
                             {
                                 FileControlRecord nineRecord = new();
                                 nineRecord.ParseRecord(line);
-                                achFile.NineRecord = nineRecord;
+                                achFile.FileControl = nineRecord;
                             }
                             break;
 

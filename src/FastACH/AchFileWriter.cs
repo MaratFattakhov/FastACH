@@ -41,7 +41,7 @@
             Func<IRecord, ILineWriter> getLineWriter)
         {
             var lineNumber = 0;
-            WriteToStream(writer, achFile.OneRecord, getLineWriter, ref lineNumber);
+            WriteToStream(writer, achFile.FileHeader, getLineWriter, ref lineNumber);
 
             foreach (var batchRecord in achFile.BatchRecordList)
             {
@@ -60,10 +60,10 @@
                 WriteToStream(writer, batchRecord.BatchControl, getLineWriter, ref lineNumber);
             }
 
-            WriteToStream(writer, achFile.NineRecord, getLineWriter, ref lineNumber, false);
+            WriteToStream(writer, achFile.FileControl, getLineWriter, ref lineNumber, false);
 
             // write extra fillers so block count is even at batch size, default=10
-            for (long i = lineNumber; i < achFile.NineRecord.BlockCount * _blockingFactor; i++)
+            for (long i = lineNumber; i < achFile.FileControl.BlockCount * _blockingFactor; i++)
             {
                 writer.WriteLine();
                 writer.Write(new string('9', 94));
@@ -93,7 +93,7 @@
         {
             ulong traceNumber = 0;
             return new Func<string>(
-                () => achFile.OneRecord.ImmediateDestination.PadLeft(8, ' ').Substring(0, 8) + (++traceNumber).ToString().PadLeft(7, '0'));
+                () => achFile.FileHeader.ImmediateDestination.PadLeft(8, ' ').Substring(0, 8) + (++traceNumber).ToString().PadLeft(7, '0'));
         }
 
         private Func<ulong> GetDefaultBatchNumberGenerator()

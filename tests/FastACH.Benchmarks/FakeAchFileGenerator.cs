@@ -15,7 +15,7 @@ namespace FastACH.Benchmarks
         {
             var achFile = new AchFile()
             {
-                OneRecord = new FileHeaderRecord()
+                FileHeader = new FileHeaderRecord()
                 {
                     ImmediateDestination = "123456789",
                     ImmediateOrigin = "123456789",

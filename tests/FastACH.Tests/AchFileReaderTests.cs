@@ -15,7 +15,7 @@ namespace FastACH.Tests
 
             // Assert
             actual.Should().NotBeNull();
-            actual.OneRecord.Should().NotBeNull();
+            actual.FileHeader.Should().NotBeNull();
             actual.BatchRecordList.Should().NotBeNull();
         }
     }

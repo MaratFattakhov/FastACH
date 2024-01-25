@@ -4,9 +4,9 @@ namespace FastACH
 {
     public class AchFile
     {
-        public FileHeaderRecord OneRecord = new();
+        public FileHeaderRecord FileHeader = new();
         public List<BatchRecord> BatchRecordList = new();
-        public FileControlRecord NineRecord = new();
+        public FileControlRecord FileControl = new();
 
         /// <summary>
         /// Recalculates Nine record totals, usually used as you want to write the file somewhere.
@@ -28,14 +28,14 @@ namespace FastACH
                 + BatchRecordList.Count * 2 // 2 for batch header and batch control
                 + 2; // 2 for file header and file control
 
-            NineRecord.BatchCount = (uint)BatchRecordList.Count;
-            NineRecord.BlockCount = (uint)Math.Ceiling(itemsCount / 10.0);
-            NineRecord.EntryAddendaCount = (uint)BatchRecordList.Select(x => (int)x.BatchControl.EntryAddendaCount).Sum();
-            NineRecord.EntryHash = BatchRecordList
+            FileControl.BatchCount = (uint)BatchRecordList.Count;
+            FileControl.BlockCount = (uint)Math.Ceiling(itemsCount / 10.0);
+            FileControl.EntryAddendaCount = (uint)BatchRecordList.Select(x => (int)x.BatchControl.EntryAddendaCount).Sum();
+            FileControl.EntryHash = BatchRecordList
                 .Select(p => p.BatchControl.EntryHash)
                 .Aggregate((ulong)0, (a, b) => a + b);
-            NineRecord.TotalCreditEntryDollarAmount = BatchRecordList.Sum(p => p.BatchControl.TotalCreditEntryDollarAmount);
-            NineRecord.TotalDebitEntryDollarAmount = BatchRecordList.Sum(p => p.BatchControl.TotalDebitEntryDollarAmount);
+            FileControl.TotalCreditEntryDollarAmount = BatchRecordList.Sum(p => p.BatchControl.TotalCreditEntryDollarAmount);
+            FileControl.TotalDebitEntryDollarAmount = BatchRecordList.Sum(p => p.BatchControl.TotalDebitEntryDollarAmount);
         }
 
         public void RecalculateTotals(
