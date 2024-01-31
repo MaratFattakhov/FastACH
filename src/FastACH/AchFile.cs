@@ -66,9 +66,8 @@ namespace FastACH
                     .Aggregate((ulong)0, (a, b) => a + b),
                 TotalCreditEntryDollarAmount = transactionDetails.Where(x => TransactionCodes.IsCredit(x.EntryDetail.TransactionCode)).Sum(x => Math.Round(x.EntryDetail.Amount, 2, MidpointRounding.AwayFromZero)),
                 TotalDebitEntryDollarAmount = transactionDetails.Where(x => TransactionCodes.IsDebit(x.EntryDetail.TransactionCode)).Sum(x => Math.Round(x.EntryDetail.Amount, 2, MidpointRounding.AwayFromZero)),
-                CompanyIdentification = batchHeader.CompanyId ?? string.Empty,
-                OriginatingDFINumber = batchHeader.OriginatingDFIID ?? string.Empty,
-                MessageAuthenticationCode = string.Empty,
+                CompanyIdentification = batchHeader.CompanyId,
+                OriginatingDFINumber = batchHeader.OriginatingDFIID,
             };
         }
 

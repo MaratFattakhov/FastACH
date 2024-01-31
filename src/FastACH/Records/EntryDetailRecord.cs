@@ -48,7 +48,7 @@ namespace FastACH.Records
         /// <summary>
         /// Position 40-54: Receiver Identification Number (alpha-numeric)
         /// </summary>
-        public string? ReceiverIdentificationNumber { get; set; }
+        public string ReceiverIdentificationNumber { get; set; } = string.Empty;
 
         /// <summary>
         /// Position 55-76: Receiver Name (alpha)
@@ -58,7 +58,7 @@ namespace FastACH.Records
         /// <summary>
         /// Position 77-78: Discretionary Data (alpha-numeric)
         /// </summary>
-        public string? DiscretionaryData { get; set; }
+        public string DiscretionaryData { get; set; } = string.Empty;
 
         /// <summary>
         /// Position 79-79: Addenda Record Indicator (numeric)
@@ -108,9 +108,9 @@ namespace FastACH.Records
             writer.Write(CheckDigit.ToString(), 1);
             writer.Write(DFIAccountNumber, 17);
             writer.Write((ulong)Math.Round(Amount * 100, MidpointRounding.AwayFromZero), 10);
-            writer.Write(ReceiverIdentificationNumber ?? string.Empty, 15);
+            writer.Write(ReceiverIdentificationNumber, 15);
             writer.Write(ReceiverName, 22);
-            writer.Write(DiscretionaryData ?? string.Empty, 2);
+            writer.Write(DiscretionaryData, 2);
             writer.Write(AddendaRecordIndicator ? "1" : "0", 1);
             writer.Write(TraceNumber, 15);
         }

@@ -28,7 +28,7 @@ namespace FastACH.Records
         /// <summary>
         /// Position 21-40: Company Discretionary Data (alpha-numeric)
         /// </summary>
-        public string? CompanyDiscretionaryData { get; set; }
+        public string CompanyDiscretionaryData { get; set; } = string.Empty;
 
         /// <summary>
         /// Position 41-50: Company Identification (alpha-numeric)
@@ -106,7 +106,7 @@ namespace FastACH.Records
             writer.Write(RecordTypeCode, 1);
             writer.Write(ServiceClassCode, 3);
             writer.Write(CompanyName, 16);
-            writer.Write(CompanyDiscretionaryData ?? string.Empty, 20);
+            writer.Write(CompanyDiscretionaryData, 20);
             writer.Write(CompanyId, 10);
             writer.Write(StandardEntryClassCode, 3);
             writer.Write(CompanyEntryDescription, 10);

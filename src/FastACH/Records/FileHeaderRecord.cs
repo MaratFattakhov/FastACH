@@ -60,17 +60,17 @@ namespace FastACH.Records
         /// <summary>
         /// Position 41-63: Immediate Destination Name (alpha-numeric)
         /// </summary>
-        public string? ImmediateDestinationName { get; set; }
+        public string ImmediateDestinationName { get; set; } = string.Empty;
 
         /// <summary>
         /// Position 64-86: Immediate Origin Name (alpha-numeric)
         /// </summary>
-        public string? ImmediateOriginName { get; set; }
+        public string ImmediateOriginName { get; set; } = string.Empty;
 
         /// <summary>
         /// Position 87-94: Reference Code (alpha-numeric)
         /// </summary>
-        public string? ReferenceCode { get; set; }
+        public string ReferenceCode { get; set; } = string.Empty;
 
         public FileHeaderRecord()
         {
@@ -106,9 +106,9 @@ namespace FastACH.Records
             writer.Write(RecordSize, 3);
             writer.Write(BlockingFactor, 2);
             writer.Write(FormatCode, 1);
-            writer.Write(ImmediateDestinationName ?? string.Empty, 23);
-            writer.Write(ImmediateOriginName ?? string.Empty, 23);
-            writer.Write(ReferenceCode ?? string.Empty, 8);
+            writer.Write(ImmediateDestinationName, 23);
+            writer.Write(ImmediateOriginName, 23);
+            writer.Write(ReferenceCode, 8);
         }
     }
 }
