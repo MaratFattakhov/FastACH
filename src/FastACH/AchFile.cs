@@ -9,7 +9,7 @@ namespace FastACH
         }
 
         public required FileHeaderRecord FileHeader { get; set; }
-        public required List<BatchRecord> BatchRecordList { get; set; }
+        public List<BatchRecord> BatchRecordList { get; set; } = new List<BatchRecord>();
         public FileControlRecord FileControl { get; set; } = FileControlRecord.Empty;
 
         /// <summary>
