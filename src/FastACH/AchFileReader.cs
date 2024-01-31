@@ -9,33 +9,35 @@ namespace FastACH
         /// </summary>
         public async Task<AchFile> Read(string filePath, CancellationToken cancellationToken = default)
         {
-            var achFile = new AchFile();
+            var batchRecordList = new List<BatchRecord>();
+            FileHeaderRecord? fileHeaderRecord = null;
             BatchRecord? currentBatch = null;
             uint lineNumber = 0;
             try
             {
                 using StreamReader reader = new(filePath);
-                string? line;
-                while ((line = await reader.ReadLineAsync(cancellationToken)) != null)
+
+                var content = await reader.ReadToEndAsync(cancellationToken);
+
+                var lines = content.Split(Environment.NewLine);
+
+                foreach (var line in lines)
                 {
                     lineNumber++;
-                    switch (line.Substring(0, 1))
+                    switch (line.AsSpan().Slice(0, 1))
                     {
                         case "1":
-                            FileHeaderRecord oneRecord = new();
-                            oneRecord.ParseRecord(line);
-                            achFile.FileHeader = oneRecord;
+                            FileHeaderRecord oneRecord = new(line);
+                            fileHeaderRecord = oneRecord;
                             break;
 
                         case "5":
-                            BatchHeaderRecord fiveRecord = new();
-                            fiveRecord.ParseRecord(line);
+                            BatchHeaderRecord fiveRecord = new(line);
                             currentBatch = new BatchRecord() { BatchHeader = fiveRecord };
                             break;
 
                         case "6":
-                            EntryDetailRecord sixRecord = new();
-                            sixRecord.ParseRecord(line);
+                            EntryDetailRecord sixRecord = new(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
                             var transactionDetails = new TransactionDetails() { EntryDetail = sixRecord, Addenda = null };
@@ -43,30 +45,28 @@ namespace FastACH
                             break;
 
                         case "7":
-                            AddendaRecord sevenRecord = new();
-                            sevenRecord.ParseRecord(line);
+                            AddendaRecord sevenRecord = new(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
                             currentBatch.TransactionDetailsList.Last().Addenda = sevenRecord;
                             break;
 
                         case "8":
-                            BatchControlRecord eightRecord = new();
-                            eightRecord.ParseRecord(line);
+                            BatchControlRecord eightRecord = new(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
                             currentBatch.BatchControl = eightRecord;
-                            achFile.BatchRecordList.Add(currentBatch);
+                            batchRecordList.Add(currentBatch);
                             break;
 
                         case "9":
-                            if (!line.StartsWith("999999999999999999999999"))
+                            FileControlRecord nineRecord = new(line);
+                            return new AchFile()
                             {
-                                FileControlRecord nineRecord = new();
-                                nineRecord.ParseRecord(line);
-                                achFile.FileControl = nineRecord;
-                            }
-                            break;
+                                BatchRecordList = batchRecordList,
+                                FileControl = nineRecord,
+                                FileHeader = fileHeaderRecord ?? throw new InvalidOperationException("Missing File Header Record."),
+                            };
 
                         default:
                             break;
@@ -78,7 +78,7 @@ namespace FastACH
                 throw new AchFileReadingException(lineNumber, ex);
             }
 
-            return achFile;
+            throw new InvalidOperationException("ACH File doesn't contain termination file control (9) record.");
         }
     }
 }

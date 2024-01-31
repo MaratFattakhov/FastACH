@@ -1,30 +1,79 @@
-﻿namespace FastACH.Records
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace FastACH.Records
 {
+    /// <summary>
+    /// File Control Record (9 record)
+    /// </summary>
     public class FileControlRecord : IRecord
     {
-        // Position 1-1: Record Type Code (numeric)
+        /// <summary>
+        /// Position 1-1: Record Type Code (numeric)
+        /// </summary>
         public string RecordTypeCode => "9";
 
-        // Position 2-7: Batch Count (numeric)
-        public uint BatchCount { get; set; }
+        /// <summary>
+        /// Position 2-7: Batch Count (numeric)
+        /// </summary>
+        public required uint BatchCount { get; set; } = 0;
 
-        // Position 8-13: Block Count (numeric)
-        public uint BlockCount { get; set; }
+        /// <summary>
+        /// Position 8-13: Block Count (numeric)
+        /// </summary>
+        public required uint BlockCount { get; set; } = 0;
 
-        // Position 14-21: Entry/Addenda Count (numeric)
-        public uint EntryAddendaCount { get; set; }
+        /// <summary>
+        /// Position 14-21: Entry/Addenda Count (numeric)
+        /// </summary>
+        public required uint EntryAddendaCount { get; set; } = 0;
 
-        // Position 22-31: Entry Hash (numeric)
-        public ulong EntryHash { get; set; }
+        /// <summary>
+        /// Position 22-31: Entry Hash (numeric)
+        /// </summary>
+        public required ulong EntryHash { get; set; } = 0;
 
-        // Position 32-43: Total Debit Entry Dollar Amount (numeric)
-        public decimal TotalDebitEntryDollarAmount { get; set; }
+        /// <summary>
+        /// Position 32-43: Total Debit Entry Dollar Amount (numeric)
+        /// </summary>
+        public required decimal TotalDebitEntryDollarAmount { get; set; } = 0;
 
-        // Position 44-55: Total Credit Entry Dollar Amount (numeric)
-        public decimal TotalCreditEntryDollarAmount { get; set; }
+        /// <summary>
+        /// Position 44-55: Total Credit Entry Dollar Amount (numeric)
+        /// </summary>
+        public required decimal TotalCreditEntryDollarAmount { get; set; } = 0;
 
-        // Position 56-94: Reserved (blank space)
+        /// <summary>
+        /// Position 56-94: Reserved (blank space)
+        /// </summary>
         public string Reserved => new string(' ', 39);
+
+        internal FileControlRecord()
+        {
+        }
+
+        public static FileControlRecord Empty
+        {
+            get
+            {
+                return new FileControlRecord() { BatchCount = 0, BlockCount = 0, EntryAddendaCount = 0, EntryHash = 0, TotalDebitEntryDollarAmount = 0, TotalCreditEntryDollarAmount = 0 };
+            }
+        }
+
+        [SetsRequiredMembers]
+        internal FileControlRecord(ReadOnlySpan<char> data)
+        {
+            if (data.Length != 94)
+            {
+                throw new ArgumentException($"Invalid File Control Record Header (8 record) length: Expected 94, Actual {data.Length}");
+            }
+
+            BatchCount = uint.Parse(data.Slice(1, 6));
+            BlockCount = uint.Parse(data.Slice(7, 6));
+            EntryAddendaCount = uint.Parse(data.Slice(13, 8));
+            EntryHash = ulong.Parse(data.Slice(21, 10));
+            TotalDebitEntryDollarAmount = decimal.Parse(data.Slice(31, 12)) / 100;
+            TotalCreditEntryDollarAmount = decimal.Parse(data.Slice(43, 12)) / 100;
+        }
 
         public void Write(ILineWriter writer)
         {
@@ -36,21 +85,6 @@
             writer.Write((ulong)Math.Round(TotalDebitEntryDollarAmount * 100, MidpointRounding.AwayFromZero), 12);
             writer.Write((ulong)Math.Round(TotalCreditEntryDollarAmount * 100, MidpointRounding.AwayFromZero), 12);
             writer.Write(Reserved, 39);
-        }
-
-        public void ParseRecord(string data)
-        {
-            if (string.IsNullOrEmpty(data) || data.Length != 94)
-            {
-                throw new ArgumentException($"Invalid File Control Record Header (8 record) length: Expected 94, Actual {data?.Length ?? 0}");
-            }
-
-            BatchCount = uint.Parse(data.Substring(1, 6));
-            BlockCount = uint.Parse(data.Substring(7, 6));
-            EntryAddendaCount = uint.Parse(data.Substring(13, 8));
-            EntryHash = ulong.Parse(data.Substring(21, 10));
-            TotalDebitEntryDollarAmount = decimal.Parse(data.Substring(31, 12)) / 100;
-            TotalCreditEntryDollarAmount = decimal.Parse(data.Substring(43, 12)) / 100;
         }
     }
 }

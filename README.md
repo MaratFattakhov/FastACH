@@ -105,4 +105,19 @@ await writer.WriteToFile(achFile, "ACH.txt");
 ```
 
 ## Perfomance results
-todo
+
+I created a benchmark to compare reading performance between FastACH and very popular [ChoETL.Nacha library](https://github.com/Cinchoo/ChoETL.NACHA).
+
+BenchmarkDotNet v0.13.12, Windows 11 (10.0.22621.3007/22H2/2022Update/SunValley2)
+13th Gen Intel Core i7-1370P, 1 CPU, 20 logical and 14 physical cores
+.NET SDK 8.0.100
+  [Host]     : .NET 7.0.15 (7.0.1523.57226), X64 RyuJIT AVX2
+  DefaultJob : .NET 7.0.15 (7.0.1523.57226), X64 RyuJIT AVX2
+
+
+| Method       | NumberOfEntries | Mean          | Error      | StdDev     |
+|------------- |---------------- |--------------:|-----------:|-----------:|
+| FastACH      | 1000            |     0.8138 ms |  0.0123 ms |  0.0109 ms |
+| ChoETL.Nacha | 1000            |   335.7584 ms |  6.6044 ms | 13.1896 ms |
+| FastACH      | 10000           |    10.0477 ms |  0.1996 ms |  0.4505 ms |
+| ChoETL.Nacha | 10000           | 3,240.3946 ms | 54.2025 ms | 50.7010 ms |

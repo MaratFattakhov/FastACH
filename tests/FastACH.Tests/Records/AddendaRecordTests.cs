@@ -11,13 +11,12 @@ namespace FastACH.Tests.Records
             string addendaInformation,
             uint addendaSequenceNumber,
             ulong entryDetailSequenceNumber)
-        { 
+        {
             // Arrange
             var s = $"705{addendaInformation,-80}{addendaSequenceNumber:0000}{entryDetailSequenceNumber:0000000}";
-            var record = new AddendaRecord();
 
             // Act
-            record.ParseRecord(s);
+            var record = new AddendaRecord(s);
 
             // Assert
             record.Should().BeEquivalentTo(new AddendaRecord()

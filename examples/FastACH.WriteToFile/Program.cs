@@ -14,7 +14,7 @@ var achFile = new AchFile()
         ImmediateOriginName = "Microsoft Inc.",
         ReferenceCode = "00000000"
     },
-    BatchRecordList =
+    BatchRecordList = new List<BatchRecord>()
     {
         new BatchRecord()
         {

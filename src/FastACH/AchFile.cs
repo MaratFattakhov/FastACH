@@ -4,9 +4,13 @@ namespace FastACH
 {
     public class AchFile
     {
-        public FileHeaderRecord FileHeader = new();
-        public List<BatchRecord> BatchRecordList = new();
-        public FileControlRecord FileControl = new();
+        public AchFile()
+        {
+        }
+
+        public required FileHeaderRecord FileHeader { get; set; }
+        public required List<BatchRecord> BatchRecordList { get; set; }
+        public FileControlRecord FileControl { get; set; } = FileControlRecord.Empty;
 
         /// <summary>
         /// Recalculates Nine record totals, usually used as you want to write the file somewhere.
@@ -38,31 +42,40 @@ namespace FastACH
             FileControl.TotalDebitEntryDollarAmount = BatchRecordList.Sum(p => p.BatchControl.TotalDebitEntryDollarAmount);
         }
 
-        public void RecalculateTotals(
+        private void RecalculateTotals(
             BatchRecord batch,
             Func<ulong> batchNumberGenerator,
             Func<string> traceNumberGenerator,
             Func<uint> adendaSequenceNumberGenerator)
         {
-            batch.BatchControl.ServiceClassCode = batch.BatchHeader.ServiceClassCode;
             UpdateBatchNumbers(batch, batchNumberGenerator);
             UpdateTraceNumbers(batch, traceNumberGenerator);
             UpdateAdendaSequenceCounters(batch, adendaSequenceNumberGenerator);
-            batch.BatchControl.EntryAddendaCount = (uint)batch.TransactionDetailsList.Count + (uint)batch.TransactionDetailsList.Where(x => x.Addenda != null).Count();
-            batch.BatchControl.EntryHash = batch.TransactionDetailsList
-                .Select(p => p.EntryDetail.ReceivingDFIID)
-                .Aggregate((ulong)0, (a, b) => a + b);
-            batch.BatchControl.TotalCreditEntryDollarAmount = batch.TransactionDetailsList.Where(x => TransactionCodes.IsCredit(x.EntryDetail.TransactionCode)).Sum(x => Math.Round(x.EntryDetail.Amount, 2, MidpointRounding.AwayFromZero));
-            batch.BatchControl.TotalDebitEntryDollarAmount = batch.TransactionDetailsList.Where(x => TransactionCodes.IsDebit(x.EntryDetail.TransactionCode)).Sum(x => Math.Round(x.EntryDetail.Amount, 2, MidpointRounding.AwayFromZero));
-            batch.BatchControl.CompanyIdentification = batch.BatchHeader.CompanyId ?? string.Empty;
-            batch.BatchControl.OriginatingDFINumber = batch.BatchHeader.OriginatingDFIID ?? string.Empty;
+            batch.BatchControl = Create(batch.BatchHeader, batch.TransactionDetailsList);
         }
 
-        public void UpdateAdendaSequenceCounters(BatchRecord batch, Func<uint> adendaSequenceNumberGenerator)
+        private BatchControlRecord Create(BatchHeaderRecord batchHeader, List<TransactionDetails> transactionDetails)
+        {
+            return new BatchControlRecord()
+            {
+                BatchNumber = batchHeader.BatchNumber,
+                ServiceClassCode = batchHeader.ServiceClassCode,
+                EntryAddendaCount = (uint)transactionDetails.Count + (uint)transactionDetails.Where(x => x.Addenda != null).Count(),
+                EntryHash = transactionDetails
+                    .Select(p => p.EntryDetail.ReceivingDFIID)
+                    .Aggregate((ulong)0, (a, b) => a + b),
+                TotalCreditEntryDollarAmount = transactionDetails.Where(x => TransactionCodes.IsCredit(x.EntryDetail.TransactionCode)).Sum(x => Math.Round(x.EntryDetail.Amount, 2, MidpointRounding.AwayFromZero)),
+                TotalDebitEntryDollarAmount = transactionDetails.Where(x => TransactionCodes.IsDebit(x.EntryDetail.TransactionCode)).Sum(x => Math.Round(x.EntryDetail.Amount, 2, MidpointRounding.AwayFromZero)),
+                CompanyIdentification = batchHeader.CompanyId ?? string.Empty,
+                OriginatingDFINumber = batchHeader.OriginatingDFIID ?? string.Empty,
+                MessageAuthenticationCode = string.Empty,
+            };
+        }
+
+        private void UpdateAdendaSequenceCounters(BatchRecord batch, Func<uint> adendaSequenceNumberGenerator)
         {
             foreach (var transactionDetails in batch.TransactionDetailsList)
             {
-
                 if (transactionDetails.EntryDetail.AddendaRecordIndicator && transactionDetails.Addenda != null)
                 {
                     var counter = adendaSequenceNumberGenerator();
@@ -71,14 +84,13 @@ namespace FastACH
             }
         }
 
-        public void UpdateBatchNumbers(BatchRecord batch, Func<ulong> batchNumberGenerator)
+        private void UpdateBatchNumbers(BatchRecord batch, Func<ulong> batchNumberGenerator)
         {
             var batchNumber = batchNumberGenerator();
             batch.BatchHeader.BatchNumber = batchNumber;
-            batch.BatchControl.BatchNumber = batchNumber;
         }
 
-        public void UpdateTraceNumbers(BatchRecord batch, Func<string> traceNumberGenerator)
+        private void UpdateTraceNumbers(BatchRecord batch, Func<string> traceNumberGenerator)
         {
             foreach (var transactionDetails in batch.TransactionDetailsList)
             {

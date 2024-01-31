@@ -1,8 +1,15 @@
-﻿namespace FastACH.Records
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace FastACH.Records
 {
+    /// <summary>
+    /// Batch Header Record (5 record)
+    /// </summary>
     public class BatchHeaderRecord : IRecord
     {
-        // Position 1-1: Record Type Code (numeric)
+        /// <summary>
+        /// Position 1-1: Record Type Code (numeric)
+        /// </summary>
         public string RecordTypeCode => "5";
 
         /// <summary>
@@ -11,47 +18,95 @@
         ///     220 – ACH Credits Only
         ///     225 – ACH Debits Only
         /// </summary>
-        public uint ServiceClassCode { get; set; }
+        public required uint ServiceClassCode { get; set; }
 
-        // Position 5-20: Company Name (alpha-numeric)
-        public string CompanyName { get; set; }
+        /// <summary>
+        /// Position 5-20: Company Name (alpha-numeric)
+        /// </summary>
+        public required string CompanyName { get; set; }
 
-        // Position 21-40: Company Discretionary Data (alpha-numeric)
-        public string CompanyDiscretionaryData { get; set; }
+        /// <summary>
+        /// Position 21-40: Company Discretionary Data (alpha-numeric)
+        /// </summary>
+        public string? CompanyDiscretionaryData { get; set; }
 
-        // Position 41-50: Company Identification (alpha-numeric)
-        public string CompanyId { get; set; }
+        /// <summary>
+        /// Position 41-50: Company Identification (alpha-numeric)
+        /// </summary>
+        public required string CompanyId { get; set; }
 
-        // Position 51-53: Standard Entry Class Code (alpha-numeric)
+        /// <summary>
+        /// Position 51-53: Standard Entry Class Code (alpha-numeric)
+        /// </summary>
         public string StandardEntryClassCode { get; set; } = "PPD";
 
-        // Position 54-63: Company Entry Description (alpha-numeric)
-        public string CompanyEntryDescription { get; set; }
+        /// <summary>
+        /// Position 54-63: Company Entry Description (alpha-numeric)
+        /// </summary>
+        public required string CompanyEntryDescription { get; set; }
 
-        // Position 64-69: Company Descriptive Date (numeric, yyMMdd)
+        /// <summary>
+        /// Position 64-69: Company Descriptive Date (numeric, yyMMdd)
+        /// </summary>
         public DateOnly? CompanyDescriptiveDate { get; set; }
 
-        // Position 70-75: Effective Entry Date (numeric, yyMMdd)
+        /// <summary>
+        /// Position 70-75: Effective Entry Date (numeric, yyMMdd)
+        /// </summary>
         public DateOnly? EffectiveEntryDate { get; set; }
 
-        // Position 76-78: Julian Settlement Date (numeric), Always blank
+        /// <summary>
+        /// Position 76-78: Julian Settlement Date (numeric), Always blank
+        /// </summary>
         public string JulianSettlementDate { get; set; } = "   ";
 
-        // Position 79-79: Originator's Status Code (numeric)
+        /// <summary>
+        /// Position 79-79: Originator's Status Code (numeric)
+        /// </summary>
         public char OriginatorsStatusCode { get; set; } = '1';
 
-        // Position 80-87: Originator's DFI Identification Number (numeric)
-        public string OriginatingDFIID { get; set; }
+        /// <summary>
+        /// Position 80-87: Originator's DFI Identification Number (numeric)
+        /// </summary>
+        public required string OriginatingDFIID { get; set; }
 
-        // Position 88-94: Batch Number (numeric)
-        public ulong BatchNumber { get; set; }
+        /// <summary>
+        /// Position 88-94: Batch Number (numeric)
+        /// </summary>
+        public ulong BatchNumber { get; set; } = 0;
+
+        public BatchHeaderRecord()
+        {
+        }
+
+        [SetsRequiredMembers]
+        internal BatchHeaderRecord(ReadOnlySpan<char> data)
+        {
+            if (data.Length != 94)
+            {
+                throw new ArgumentException($"Invalid Batch Header Record Header (5 record) length: Expected 94, Actual {data.Length}");
+            }
+
+            ServiceClassCode = uint.Parse(data.Slice(1, 3));
+            CompanyName = data.Slice(4, 16).Trim().ToString();
+            CompanyDiscretionaryData = data.Slice(20, 20).Trim().ToString();
+            CompanyId = data.Slice(40, 10).Trim().ToString();
+            StandardEntryClassCode = data.Slice(50, 3).Trim().ToString();
+            CompanyEntryDescription = data.Slice(53, 10).Trim().ToString();
+            CompanyDescriptiveDate = DateOnly.TryParseExact(data.Slice(63, 6), "yyMMdd", out var companyDescriptiveDate) ? companyDescriptiveDate : null;
+            EffectiveEntryDate = DateOnly.TryParseExact(data.Slice(69, 6), "yyMMdd", out var effectiveEntryDate) ? effectiveEntryDate : null;
+            JulianSettlementDate = data.Slice(75, 3).Trim().ToString();
+            OriginatorsStatusCode = data.Slice(78, 1)[0];
+            OriginatingDFIID = data.Slice(79, 8).Trim().ToString();
+            BatchNumber = ulong.Parse(data.Slice(87, 7));
+        }
 
         public void Write(ILineWriter writer)
         {
             writer.Write(RecordTypeCode, 1);
             writer.Write(ServiceClassCode, 3);
             writer.Write(CompanyName, 16);
-            writer.Write(CompanyDiscretionaryData, 20);
+            writer.Write(CompanyDiscretionaryData ?? string.Empty, 20);
             writer.Write(CompanyId, 10);
             writer.Write(StandardEntryClassCode, 3);
             writer.Write(CompanyEntryDescription, 10);
@@ -61,27 +116,6 @@
             writer.Write(OriginatorsStatusCode.ToString(), 1);
             writer.Write(OriginatingDFIID, 8);
             writer.Write(BatchNumber, 7);
-        }
-
-        public void ParseRecord(string data)
-        {
-            if (string.IsNullOrEmpty(data) || data.Length != 94)
-            {
-                throw new ArgumentException($"Invalid Batch Header Record Header (5 record) length: Expected 94, Actual {data?.Length ?? 0}");
-            }
-
-            ServiceClassCode = uint.Parse(data.Substring(1, 3));
-            CompanyName = data.Substring(4, 16).Trim();
-            CompanyDiscretionaryData = data.Substring(20, 20).Trim();
-            CompanyId = data.Substring(40, 10).Trim();
-            StandardEntryClassCode = data.Substring(50, 3).Trim();
-            CompanyEntryDescription = data.Substring(53, 10).Trim();
-            CompanyDescriptiveDate = DateOnly.TryParseExact(data.Substring(63, 6), "yyMMdd", out var companyDescriptiveDate) ? companyDescriptiveDate : null;
-            EffectiveEntryDate = DateOnly.TryParseExact(data.Substring(69, 6), "yyMMdd", out var effectiveEntryDate) ? effectiveEntryDate : null;
-            JulianSettlementDate = data.Substring(75, 3).Trim();
-            OriginatorsStatusCode = data.Substring(78, 1)[0];
-            OriginatingDFIID = data.Substring(79, 8).Trim();
-            BatchNumber = ulong.Parse(data.Substring(87, 7));
         }
     }
 }

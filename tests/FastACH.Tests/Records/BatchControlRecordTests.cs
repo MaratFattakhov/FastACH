@@ -20,10 +20,9 @@ namespace FastACH.Tests.Records
         {
             // Arrange
             var s = $"8{serviceClassCode}{entryAddendaCount,6}{entryHash,10}{(uint)(debit * 100),12}{(uint)(credit * 100),12}{companyId,10}{authCode,19}      {dfiId,8}{batchNumber,7}";
-            var record = new BatchControlRecord();
 
             // Act
-            record.ParseRecord(s);
+            var record = new BatchControlRecord(s);
 
             // Assert
             record.Should().BeEquivalentTo(new BatchControlRecord()

@@ -20,11 +20,10 @@ namespace FastACH.Tests.Records
             ulong traceNumber)
         {
             // Arrange
-            var s = $"6{transactionCode, 2}{receivingDFINumber, 8}{checkDigit}{DFIAccountNumber, -17}{(uint)(amount * 100):0000000000}{receiverIdentificationNumber, -15}{receiverName, -22}{discretionaryData, 2}{(addendaRecordIndicator ? "1" : "0"), 1}{traceNumber:000000000000000}";
-            var record = new EntryDetailRecord();
+            var s = $"6{transactionCode,2}{receivingDFINumber,8}{checkDigit}{DFIAccountNumber,-17}{(uint)(amount * 100):0000000000}{receiverIdentificationNumber,-15}{receiverName,-22}{discretionaryData,2}{(addendaRecordIndicator ? "1" : "0"),1}{traceNumber:000000000000000}";
 
             // Act
-            record.ParseRecord(s);
+            var record = new EntryDetailRecord(s);
 
             // Assert
             record.Should().BeEquivalentTo(new EntryDetailRecord()

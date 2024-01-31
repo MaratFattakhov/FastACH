@@ -1,39 +1,97 @@
-﻿namespace FastACH.Records
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace FastACH.Records
 {
+    /// <summary>
+    /// Batch Control Record (8 record)
+    /// </summary>
     public class BatchControlRecord : IRecord
     {
-        // Position 1-1: Record Type Code (numeric)
+        /// <summary>
+        /// Position 1-1: Record Type Code (numeric)
+        /// </summary>
         public string RecordTypeCode => "8";
 
-        // Position 2-4: Service Class Code (numeric)
-        public uint ServiceClassCode { get; set; }
+        /// <summary>
+        /// Position 2-4: Service Class Code (numeric)
+        /// </summary>
+        public required uint ServiceClassCode { get; set; }
 
-        // Position 5-10: Entry/Addenda Count (numeric)
-        public ulong EntryAddendaCount { get; set; }
+        /// <summary>
+        /// Position 5-10: Entry/Addenda Count (numeric)
+        /// </summary>
+        public required ulong EntryAddendaCount { get; set; }
 
-        // Position 11-20: Entry Hash (numeric)
-        public ulong EntryHash { get; set; }
+        /// <summary>
+        /// Position 11-20: Entry Hash (numeric)
+        /// </summary>
+        public required ulong EntryHash { get; set; }
 
-        // Position 21-32: Total Debit Entry Dollar Amount (numeric)
-        public decimal TotalDebitEntryDollarAmount { get; set; }
+        /// <summary>
+        /// Position 21-32: Total Debit Entry Dollar Amount (numeric)
+        /// </summary>
+        public required decimal TotalDebitEntryDollarAmount { get; set; }
 
-        // Position 33-44: Total Credit Entry Dollar Amount (numeric)
-        public decimal TotalCreditEntryDollarAmount { get; set; }
+        /// <summary>
+        /// Position 33-44: Total Credit Entry Dollar Amount (numeric)
+        /// </summary>
+        public required decimal TotalCreditEntryDollarAmount { get; set; }
 
-        // Position 45-54: Company Identification (alpha-numeric)
-        public string CompanyIdentification { get; set; }
+        /// <summary>
+        /// Position 45-54: Company Identification (alpha-numeric)
+        /// </summary>
+        public required string CompanyIdentification { get; set; }
 
-        // Position 55-73: Message Authentication Code (alpha-numeric)
+        /// <summary>
+        /// Position 55-73: Message Authentication Code (alpha-numeric)
+        /// </summary>
         public string MessageAuthenticationCode { get; set; } = string.Empty;
 
-        // Position 74-79: Reserved (blank space)
+        /// <summary>
+        /// Position 74-79: Reserved (blank space)
+        /// </summary>
         public string Reserved => "      ";
 
-        // Position 80-87: Originating DFI Identification Number (numeric)
-        public string OriginatingDFINumber { get; set; }
+        /// <summary>
+        /// Position 80-87: Originating DFI Identification Number (numeric)
+        /// </summary>
+        public required string OriginatingDFINumber { get; set; }
 
-        // Position 88-94: Batch Number (numeric)
-        public ulong BatchNumber { get; set; }
+        /// <summary>
+        /// Position 88-94: Batch Number (numeric)
+        /// </summary>
+        public required ulong BatchNumber { get; set; }
+
+        internal BatchControlRecord()
+        {
+        }
+
+        public static BatchControlRecord Empty
+        {
+            get
+            {
+                return new BatchControlRecord() { ServiceClassCode = 0, EntryAddendaCount = 0, EntryHash = 0, TotalDebitEntryDollarAmount = 0, TotalCreditEntryDollarAmount = 0, CompanyIdentification = string.Empty, OriginatingDFINumber = string.Empty, BatchNumber = 0 };
+            }
+        }
+
+        [SetsRequiredMembers]
+        internal BatchControlRecord(ReadOnlySpan<char> data)
+        {
+            if (data.Length != 94)
+            {
+                throw new ArgumentException($"Invalid Batch Control Record Header (8 record) length: Expected 94, Actual {data.Length}");
+            }
+
+            ServiceClassCode = uint.Parse(data.Slice(1, 3));
+            EntryAddendaCount = ulong.Parse(data.Slice(4, 6));
+            EntryHash = ulong.Parse(data.Slice(10, 10));
+            TotalDebitEntryDollarAmount = decimal.Parse(data.Slice(20, 12)) / 100;
+            TotalCreditEntryDollarAmount = decimal.Parse(data.Slice(32, 12)) / 100;
+            CompanyIdentification = data.Slice(44, 10).Trim().ToString();
+            MessageAuthenticationCode = data.Slice(54, 19).Trim().ToString();
+            OriginatingDFINumber = data.Slice(79, 8).Trim().ToString();
+            BatchNumber = ulong.Parse(data.Slice(87, 7));
+        }
 
         public void Write(ILineWriter writer)
         {
@@ -48,24 +106,6 @@
             writer.Write(Reserved, 6);
             writer.Write(OriginatingDFINumber, 8);
             writer.Write(BatchNumber, 7);
-        }
-
-        public void ParseRecord(string data)
-        {
-            if (string.IsNullOrEmpty(data) || data.Length != 94)
-            {
-                throw new ArgumentException($"Invalid Batch Control Record Header (8 record) length: Expected 94, Actual {data?.Length ?? 0}");
-            }
-
-            ServiceClassCode = uint.Parse(data.Substring(1, 3));
-            EntryAddendaCount = ulong.Parse(data.Substring(4, 6));
-            EntryHash = ulong.Parse(data.Substring(10, 10));
-            TotalDebitEntryDollarAmount = decimal.Parse(data.Substring(20, 12)) / 100;
-            TotalCreditEntryDollarAmount = decimal.Parse(data.Substring(32, 12)) / 100;
-            CompanyIdentification = data.Substring(44, 10).Trim();
-            MessageAuthenticationCode = data.Substring(54, 19).Trim();
-            OriginatingDFINumber = data.Substring(79, 8).Trim();
-            BatchNumber = ulong.Parse(data.Substring(87, 7));
         }
     }
 }

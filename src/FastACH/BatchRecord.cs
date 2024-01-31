@@ -15,7 +15,7 @@ namespace FastACH
         /// <summary>
         /// Represents the Batch Control Record.
         /// </summary>
-        public BatchControlRecord BatchControl { get; set; } = new();
+        public BatchControlRecord BatchControl { get; set; } = BatchControlRecord.Empty;
 
         /// <summary>
         /// List of Tranasctions for this Batch.
