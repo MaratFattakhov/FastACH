@@ -30,7 +30,7 @@ namespace FastACH.Records
         /// <summary>
         /// Position 24-29: File Creation Date (numeric, yyMMdd)
         /// </summary>
-        public required DateOnly FileCreationDate { get; set; }
+        public DateOnly FileCreationDate { get; set; } = DateOnly.FromDateTime(DateTime.Now);
 
         /// <summary>
         /// Position 30-33: File Creation Time (numeric, HHmm)
