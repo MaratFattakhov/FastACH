@@ -59,7 +59,7 @@ var achFile = new AchFile()
             },
             TransactionDetailsList =
             {
-                new TransactionDetails
+                new TransactionRecord
                 {
                     EntryDetail = new EntryDetailRecord()
                     {
@@ -78,7 +78,7 @@ var achFile = new AchFile()
                         AddendaInformation = "Monthly bill"
                     }
                 },
-                new TransactionDetails()
+                new TransactionRecord()
                 {
                     EntryDetail = new EntryDetailRecord()
                     {

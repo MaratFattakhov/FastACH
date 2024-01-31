@@ -40,15 +40,15 @@ namespace FastACH
                             EntryDetailRecord sixRecord = new(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
-                            var transactionDetails = new TransactionDetails() { EntryDetail = sixRecord, Addenda = null };
-                            currentBatch.TransactionDetailsList.Add(transactionDetails);
+                            var transactionDetails = new TransactionRecord() { EntryDetail = sixRecord, Addenda = null };
+                            currentBatch.TransactionRecords.Add(transactionDetails);
                             break;
 
                         case "7":
                             AddendaRecord sevenRecord = new(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
-                            currentBatch.TransactionDetailsList.Last().Addenda = sevenRecord;
+                            currentBatch.TransactionRecords.Last().Addenda = sevenRecord;
                             break;
 
                         case "8":

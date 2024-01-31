@@ -47,7 +47,7 @@
             {
                 WriteToStream(writer, batchRecord.BatchHeader, getLineWriter, ref lineNumber);
 
-                foreach (var transactionDetails in batchRecord.TransactionDetailsList)
+                foreach (var transactionDetails in batchRecord.TransactionRecords)
                 {
                     WriteToStream(writer, transactionDetails.EntryDetail, getLineWriter, ref lineNumber);
 

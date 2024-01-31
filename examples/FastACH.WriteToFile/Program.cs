@@ -29,9 +29,9 @@ var achFile = new AchFile()
                 EffectiveEntryDate = new DateOnly(2011, 01, 02),
                 OriginatingDFIID = "DFINumber"
             },
-            TransactionDetailsList =
+            TransactionRecords =
             {
-                new TransactionDetails
+                new TransactionRecord
                 {
                     EntryDetail = new EntryDetailRecord()
                     {
@@ -50,7 +50,7 @@ var achFile = new AchFile()
                         AddendaInformation = "Monthly bill"
                     }
                 },
-                new TransactionDetails()
+                new TransactionRecord()
                 {
                     EntryDetail = new EntryDetailRecord()
                     {

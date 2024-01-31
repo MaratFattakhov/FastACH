@@ -50,13 +50,13 @@ namespace FastACH.Benchmarks
                     EffectiveEntryDate = new DateOnly(2011, 01, 02),
                     OriginatingDFIID = "DFINumber"
                 },
-                TransactionDetailsList = Enumerable.Range(0, numberOfEntries).Select(_ => CreateTransactionDetails()).ToList(),
+                TransactionRecords = Enumerable.Range(0, numberOfEntries).Select(_ => CreateTransactionDetails()).ToList(),
             };
         }
 
-        private static TransactionDetails CreateTransactionDetails()
+        private static TransactionRecord CreateTransactionDetails()
         {
-            return new TransactionDetails
+            return new TransactionRecord
             {
                 EntryDetail = new EntryDetailRecord()
                 {

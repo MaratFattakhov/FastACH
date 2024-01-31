@@ -28,7 +28,7 @@ namespace FastACH
             }
 
             var itemsCount = BatchRecordList.SelectMany(x =>
-                x.TransactionDetailsList.Select(p => p.Addenda is not null ? 2 : 1)).Sum()
+                x.TransactionRecords.Select(p => p.Addenda is not null ? 2 : 1)).Sum()
                 + BatchRecordList.Count * 2 // 2 for batch header and batch control
                 + 2; // 2 for file header and file control
 
@@ -51,10 +51,10 @@ namespace FastACH
             UpdateBatchNumbers(batch, batchNumberGenerator);
             UpdateTraceNumbers(batch, traceNumberGenerator);
             UpdateAdendaSequenceCounters(batch, adendaSequenceNumberGenerator);
-            batch.BatchControl = Create(batch.BatchHeader, batch.TransactionDetailsList);
+            batch.BatchControl = Create(batch.BatchHeader, batch.TransactionRecords);
         }
 
-        private BatchControlRecord Create(BatchHeaderRecord batchHeader, List<TransactionDetails> transactionDetails)
+        private BatchControlRecord Create(BatchHeaderRecord batchHeader, List<TransactionRecord> transactionDetails)
         {
             return new BatchControlRecord()
             {
@@ -73,7 +73,7 @@ namespace FastACH
 
         private void UpdateAdendaSequenceCounters(BatchRecord batch, Func<uint> adendaSequenceNumberGenerator)
         {
-            foreach (var transactionDetails in batch.TransactionDetailsList)
+            foreach (var transactionDetails in batch.TransactionRecords)
             {
                 if (transactionDetails.EntryDetail.AddendaRecordIndicator && transactionDetails.Addenda != null)
                 {
@@ -91,7 +91,7 @@ namespace FastACH
 
         private void UpdateTraceNumbers(BatchRecord batch, Func<string> traceNumberGenerator)
         {
-            foreach (var transactionDetails in batch.TransactionDetailsList)
+            foreach (var transactionDetails in batch.TransactionRecords)
             {
                 var traceNumber = traceNumberGenerator();
                 transactionDetails.EntryDetail.TraceNumber = traceNumber;
