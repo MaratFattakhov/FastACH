@@ -15,7 +15,7 @@ public class FastACHvsChoetlNacha
 {
     const string achFileName = "test.ach";
 
-    [Params(1000, 10000)]
+    [Params(1000, 10000, 100000)]
     public int NumberOfEntries { get; set; }
 
     [GlobalSetup]

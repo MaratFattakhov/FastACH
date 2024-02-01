@@ -15,13 +15,11 @@ namespace FastACH
             uint lineNumber = 0;
             try
             {
-                using StreamReader reader = new(filePath);
-
-                var content = await reader.ReadToEndAsync(cancellationToken);
-
-                var lines = content.Split(Environment.NewLine);
-
-                foreach (var line in lines)
+                using StreamReader streamReader = new(filePath);
+                var content = await streamReader.ReadToEndAsync(cancellationToken);
+                using var stringReader = new StringReader(content);
+                string? line;
+                while ((line = stringReader.ReadLine()) != null)
                 {
                     lineNumber++;
                     switch (line.AsSpan().Slice(0, 1))
