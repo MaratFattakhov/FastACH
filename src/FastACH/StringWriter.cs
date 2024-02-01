@@ -18,7 +18,8 @@
         {
             if (value is null)
             {
-                throw new ArgumentNullException($"Value must be not null.");
+                // support projects that use null strings
+                value = string.Empty;
             }
 
             // todo: do we need this check?
