@@ -9,20 +9,23 @@ namespace FastACH
         /// </summary>
         public async Task<AchFile> Read(string filePath, CancellationToken cancellationToken = default)
         {
+            using StreamReader streamReader = new(filePath);
+            var content = await streamReader.ReadToEndAsync(cancellationToken);
+            return ReadFromContent(content);
+        }
+
+        private AchFile ReadFromContent(string content)
+        {
             var batchRecordList = new List<BatchRecord>();
             FileHeaderRecord? fileHeaderRecord = null;
             BatchRecord? currentBatch = null;
             uint lineNumber = 0;
             try
             {
-                using StreamReader streamReader = new(filePath);
-                var content = await streamReader.ReadToEndAsync(cancellationToken);
-                using var stringReader = new StringReader(content);
-                string? line;
-                while ((line = stringReader.ReadLine()) != null)
+                foreach (var line in content.AsSpan().EnumerateLines())
                 {
                     lineNumber++;
-                    switch (line.AsSpan().Slice(0, 1))
+                    switch (line.Slice(0, 1))
                     {
                         case "1":
                             FileHeaderRecord oneRecord = new(line);

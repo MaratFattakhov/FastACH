@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Running;
 using ChoETL.NACHA;
 using FastACH;
@@ -11,6 +12,9 @@ var config = DefaultConfig.Instance.WithSummaryStyle(
 
 var summary = BenchmarkRunner.Run<FastACHvsChoetlNacha>(config);
 
+[MemoryDiagnoser]
+[SimpleJob(RunStrategy.ColdStart, launchCount: 1,
+    warmupCount: 1, iterationCount: 1, invocationCount: 1)]
 public class FastACHvsChoetlNacha
 {
     const string achFileName = "test.ach";
