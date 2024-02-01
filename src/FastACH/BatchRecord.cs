@@ -20,6 +20,6 @@ namespace FastACH
         /// <summary>
         /// List of Tranasctions for this Batch.
         /// </summary>
-        public List<TransactionRecord> TransactionRecords = new();
+        public List<TransactionRecord> TransactionRecords { get; set; } = new();
     }
 }
