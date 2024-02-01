@@ -16,6 +16,11 @@
 
         public void Write(string value, byte length)
         {
+            if (value is null)
+            {
+                throw new ArgumentNullException($"Value must be not null.");
+            }
+
             // todo: do we need this check?
             //if (value.Length > length)
             //    throw new InvalidOperationException($"Value {value} is too long for field length {length}");
