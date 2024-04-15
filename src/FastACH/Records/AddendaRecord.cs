@@ -23,7 +23,7 @@ namespace FastACH.Records
         public required string AddendaInformation { get; set; }
 
         // Position 84-87: Addenda Sequence Number (numeric)
-        public uint AddendaSequenceNumber { get; set; }
+        public uint AddendaSequenceNumber { get; set; } = 1;
 
         // Position 88-94: Entry Detail Sequence Number (numeric)
         public ulong EntryDetailSequenceNumber { get; set; }

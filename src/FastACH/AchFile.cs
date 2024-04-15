@@ -19,12 +19,9 @@ namespace FastACH
             Func<ulong> batchNumberGenerator,
             Func<string> traceNumberGenerator)
         {
-            var adendaSequenceCounter = 0;
-            var adendaSequenceNumberGenerator = new Func<uint>(() => (uint)++adendaSequenceCounter);
-
             foreach (var batchRecord in BatchRecordList)
             {
-                RecalculateTotals(batchRecord, batchNumberGenerator, traceNumberGenerator, adendaSequenceNumberGenerator);
+                RecalculateTotals(batchRecord, batchNumberGenerator, traceNumberGenerator);
             }
 
             var itemsCount = BatchRecordList.SelectMany(x =>
@@ -45,12 +42,10 @@ namespace FastACH
         private void RecalculateTotals(
             BatchRecord batch,
             Func<ulong> batchNumberGenerator,
-            Func<string> traceNumberGenerator,
-            Func<uint> adendaSequenceNumberGenerator)
+            Func<string> traceNumberGenerator)
         {
             UpdateBatchNumbers(batch, batchNumberGenerator);
             UpdateTraceNumbers(batch, traceNumberGenerator);
-            UpdateAdendaSequenceCounters(batch, adendaSequenceNumberGenerator);
             batch.BatchControl = Create(batch.BatchHeader, batch.TransactionRecords);
         }
 
@@ -69,18 +64,6 @@ namespace FastACH
                 CompanyIdentification = batchHeader.CompanyId,
                 OriginatingDFINumber = batchHeader.OriginatingDFIID,
             };
-        }
-
-        private void UpdateAdendaSequenceCounters(BatchRecord batch, Func<uint> adendaSequenceNumberGenerator)
-        {
-            foreach (var transactionDetails in batch.TransactionRecords)
-            {
-                if (transactionDetails.EntryDetail.AddendaRecordIndicator && transactionDetails.Addenda != null)
-                {
-                    var counter = adendaSequenceNumberGenerator();
-                    transactionDetails.Addenda.AddendaSequenceNumber = counter;
-                }
-            }
         }
 
         private void UpdateBatchNumbers(BatchRecord batch, Func<ulong> batchNumberGenerator)
