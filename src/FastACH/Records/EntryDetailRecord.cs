@@ -5,7 +5,7 @@ namespace FastACH.Records
     /// <summary>
     /// Represents an Entry Detail Record (6 record)
     /// </summary>
-    public class EntryDetailRecord : IRecord
+    public record class EntryDetailRecord : IRecord
     {
         /// <summary>
         /// Position 1-1: Record Type Code (numeric)

@@ -5,7 +5,7 @@ namespace FastACH.Records
     /// <summary>
     /// Addenda Record (7 record)
     /// </summary>
-    public class AddendaRecord : IRecord
+    public record class AddendaRecord : IRecord
     {
         // Position 1-1: Record Type Code (numeric)
         public string RecordTypeCode => "7";

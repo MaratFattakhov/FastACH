@@ -5,7 +5,7 @@ namespace FastACH.Records
     /// <summary>
     /// Batch Control Record (8 record)
     /// </summary>
-    public class BatchControlRecord : IRecord
+    public record class BatchControlRecord : IRecord
     {
         /// <summary>
         /// Position 1-1: Record Type Code (numeric)
