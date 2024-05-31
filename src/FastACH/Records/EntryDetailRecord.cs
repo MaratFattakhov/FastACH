@@ -114,5 +114,11 @@ namespace FastACH.Records
             writer.Write(AddendaRecordIndicator ? "1" : "0", 1);
             writer.Write(TraceNumber, 15);
         }
+
+        public string GetRoutingNumber()
+        {
+            var routingNumberString = ReceivingDFIID.ToString().PadLeft(8, '0');
+            return routingNumberString + CheckDigit;
+        }
     }
 }
