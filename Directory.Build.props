@@ -5,11 +5,15 @@
 
 	<Description>.NET library for reading and writing ACH files</Description>
 	<Authors>Michael Kidd, Marat Fattakhov</Authors>
+	<PackageProjectUrl>https://github.com/MaratFattakhov/FastACH</PackageProjectUrl>
+	<PackageTags>ACH, NACHA</PackageTags>
+	<PackageReleaseNotes></PackageReleaseNotes>
 	<!--<Company>the company name</Company>-->
 	<!--<Copyright>2022-2023 the company name</Copyright>-->
-	<RepositoryUrl>https://github.com/MaratFattakhov/FastACH</RepositoryUrl>
+	<RepositoryUrl>https://github.com/MaratFattakhov/FastACH.git</RepositoryUrl>
 	<RepositoryType>git</RepositoryType>
-
+	<PackageReadmeFile>README.md</PackageReadmeFile>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
 	<AppDesignerFolder>Properties</AppDesignerFolder>
 	<LangVersion>latest</LangVersion>
 	<Nullable>enable</Nullable>
