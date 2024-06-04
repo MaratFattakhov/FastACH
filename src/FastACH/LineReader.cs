@@ -46,7 +46,7 @@
                 if (optional)
                     return null;
                 else
-                    throw new ArgumentException($"Error reading date at {fromPosition} of {length} length. Expected format: {format}.");
+                    throw new ArgumentException($"Error reading date at {fromPosition} of {length} length. Expected format: {format.ToUpper()}.");
             }
             return date;
         }
