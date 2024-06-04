@@ -82,23 +82,19 @@ namespace FastACH.Records
         [SetsRequiredMembers]
         internal BatchHeaderRecord(ReadOnlySpan<char> data)
         {
-            if (data.Length != 94)
-            {
-                throw new ArgumentException($"Invalid Batch Header Record Header (5 record) length: Expected 94, Actual {data.Length}");
-            }
-
-            ServiceClassCode = uint.Parse(data.Slice(1, 3));
-            CompanyName = data.Slice(4, 16).Trim().ToString();
-            CompanyDiscretionaryData = data.Slice(20, 20).Trim().ToString();
-            CompanyId = data.Slice(40, 10).Trim().ToString();
-            StandardEntryClassCode = data.Slice(50, 3).Trim().ToString();
-            CompanyEntryDescription = data.Slice(53, 10).Trim().ToString();
-            CompanyDescriptiveDate = DateOnly.TryParseExact(data.Slice(63, 6), "yyMMdd", out var companyDescriptiveDate) ? companyDescriptiveDate : null;
-            EffectiveEntryDate = DateOnly.TryParseExact(data.Slice(69, 6), "yyMMdd", out var effectiveEntryDate) ? effectiveEntryDate : null;
-            JulianSettlementDate = data.Slice(75, 3).Trim().ToString();
-            OriginatorsStatusCode = data.Slice(78, 1)[0];
-            OriginatingDFIID = data.Slice(79, 8).Trim().ToString();
-            BatchNumber = ulong.Parse(data.Slice(87, 7));
+            var reader = new LineReader(data, 1);
+            ServiceClassCode = reader.ReadUInt(3);
+            CompanyName = reader.ReadString(16);
+            CompanyDiscretionaryData = reader.ReadString(20);
+            CompanyId = reader.ReadString(10);
+            StandardEntryClassCode = reader.ReadString(3);
+            CompanyEntryDescription = reader.ReadString(10);
+            CompanyDescriptiveDate = reader.ReadDate(true);
+            EffectiveEntryDate = reader.ReadDate(true);
+            JulianSettlementDate = reader.ReadString(3);
+            OriginatorsStatusCode = reader.ReadChar();
+            OriginatingDFIID = reader.ReadString(8);
+            BatchNumber = reader.ReadULong(7);
         }
 
         public void Write(ILineWriter writer)

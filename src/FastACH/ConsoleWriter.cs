@@ -1,6 +1,6 @@
 ﻿namespace FastACH
 {
-    public class ConsoleWriter : StringWriter
+    internal class ConsoleWriter : StringWriter
     {
         private readonly ConsoleColor[] _colors;
         private int _colorIndex = 0;

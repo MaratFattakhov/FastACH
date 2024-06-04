@@ -77,20 +77,17 @@ namespace FastACH.Records
         [SetsRequiredMembers]
         internal BatchControlRecord(ReadOnlySpan<char> data)
         {
-            if (data.Length != 94)
-            {
-                throw new ArgumentException($"Invalid Batch Control Record Header (8 record) length: Expected 94, Actual {data.Length}");
-            }
-
-            ServiceClassCode = uint.Parse(data.Slice(1, 3));
-            EntryAddendaCount = ulong.Parse(data.Slice(4, 6));
-            EntryHash = ulong.Parse(data.Slice(10, 10));
-            TotalDebitEntryDollarAmount = decimal.Parse(data.Slice(20, 12)) / 100;
-            TotalCreditEntryDollarAmount = decimal.Parse(data.Slice(32, 12)) / 100;
-            CompanyIdentification = data.Slice(44, 10).Trim().ToString();
-            MessageAuthenticationCode = data.Slice(54, 19).Trim().ToString();
-            OriginatingDFINumber = data.Slice(79, 8).Trim().ToString();
-            BatchNumber = ulong.Parse(data.Slice(87, 7));
+            var reader = new LineReader(data, 1);
+            ServiceClassCode = reader.ReadUInt(3);
+            EntryAddendaCount = reader.ReadULong(6);
+            EntryHash = reader.ReadULong(10);
+            TotalDebitEntryDollarAmount = reader.ReadDecimal(12) / 100;
+            TotalCreditEntryDollarAmount = reader.ReadDecimal(12) / 100;
+            CompanyIdentification = reader.ReadString(10);
+            MessageAuthenticationCode = reader.ReadString(19);
+            reader.Skip(6);
+            OriginatingDFINumber = reader.ReadString(8);
+            BatchNumber = reader.ReadULong(7);
         }
 
         public void Write(ILineWriter writer)

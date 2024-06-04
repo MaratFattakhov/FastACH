@@ -35,14 +35,11 @@ namespace FastACH.Records
         [SetsRequiredMembers]
         internal AddendaRecord(ReadOnlySpan<char> data)
         {
-            if (data.Length != 94)
-            {
-                throw new ArgumentException($"Invalid Addenda Record (7 record) length: Expected 94, Actual {data.Length}");
-            }
-
-            AddendaInformation = data.Slice(3, 80).Trim().ToString();
-            AddendaSequenceNumber = uint.Parse(data.Slice(83, 4));
-            EntryDetailSequenceNumber = ulong.Parse(data.Slice(87, 7));
+            var reader = new LineReader(data, 1);
+            AddendaTypeCode = reader.ReadUInt(2);
+            AddendaInformation = reader.ReadString(80);
+            AddendaSequenceNumber = reader.ReadUInt(4);
+            EntryDetailSequenceNumber = reader.ReadULong(7);
         }
 
         public void Write(ILineWriter writer)

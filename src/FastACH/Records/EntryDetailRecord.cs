@@ -78,26 +78,23 @@ namespace FastACH.Records
         [SetsRequiredMembers]
         internal EntryDetailRecord(ReadOnlySpan<char> data)
         {
-            if (data.Length != 94)
+            var reader = new LineReader(data, 1);
+            TransactionCode = reader.ReadUInt(2);
+            ReceivingDFIID = reader.ReadULong(8);
+            CheckDigit = reader.ReadChar();
+            DFIAccountNumber = reader.ReadString(17);
+            Amount = reader.ReadDecimal(10) / 100;
+            ReceiverIdentificationNumber = reader.ReadString(15);
+            ReceiverName = reader.ReadString(22);
+            DiscretionaryData = reader.ReadString(2);
+            var addendaRecordIndicator = reader.ReadChar();
+            AddendaRecordIndicator = addendaRecordIndicator switch
             {
-                throw new ArgumentException($"Invalid Entry Detail Record (6 record) length: Expected 94, Actual {data.Length}");
-            }
-
-            TransactionCode = uint.Parse(data.Slice(1, 2));
-            ReceivingDFIID = ulong.Parse(data.Slice(3, 8));
-            CheckDigit = data.Slice(11, 1)[0];
-            DFIAccountNumber = data.Slice(12, 17).Trim().ToString();
-            Amount = decimal.Parse(data.Slice(29, 10)) / 100;
-            ReceiverIdentificationNumber = data.Slice(39, 15).Trim().ToString();
-            ReceiverName = data.Slice(54, 22).Trim().ToString();
-            DiscretionaryData = data.Slice(76, 2).Trim().ToString();
-            AddendaRecordIndicator = data.Slice(78, 1) switch
-            {
-                "0" => false,
-                "1" => true,
-                _ => throw new ArgumentException($"Invalid Addenda Record Indicator (6 record) value: Expected 0 or 1, Actual {data.Slice(78, 1)}"),
+                '0' => false,
+                '1' => true,
+                _ => throw new ArgumentException($"Invalid Addenda Record Indicator (6 record) value: Expected 0 or 1, Actual {addendaRecordIndicator}"),
             };
-            TraceNumber = data.Slice(79, 15).Trim().ToString();
+            TraceNumber = reader.ReadString(15);
         }
 
         public void Write(ILineWriter writer)

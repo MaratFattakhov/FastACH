@@ -79,19 +79,16 @@ namespace FastACH.Records
         [SetsRequiredMembers]
         internal FileHeaderRecord(ReadOnlySpan<char> data)
         {
-            if (data.Length != 94)
-            {
-                throw new ArgumentException($"Invalid File Header (1 record) length: Expected 94, Actual {data.Length}");
-            }
-
-            ImmediateDestination = data.Slice(3, 10).Trim().ToString();
-            ImmediateOrigin = data.Slice(13, 10).Trim().ToString();
-            FileCreationDate = DateOnly.ParseExact(data.Slice(23, 6), "yyMMdd");
-            FileCreationTime = TimeOnly.TryParseExact(data.Slice(29, 4), "HHmm", out var time) ? time : null;
-            FileIdModifier = data.Slice(33, 1).Trim()[0];
-            ImmediateDestinationName = data.Slice(40, 23).Trim().ToString();
-            ImmediateOriginName = data.Slice(63, 23).Trim().ToString();
-            ReferenceCode = data.Slice(86, 8).Trim().ToString();
+            var reader = new LineReader(data, 3);
+            ImmediateDestination = reader.ReadString(10);
+            ImmediateOrigin = reader.ReadString(10);
+            FileCreationDate = reader.ReadDate(false)!.Value;
+            FileCreationTime = reader.ReadTime();
+            FileIdModifier = reader.ReadChar();
+            reader.Skip(6);
+            ImmediateDestinationName = reader.ReadString(23);
+            ImmediateOriginName = reader.ReadString(23);
+            ReferenceCode = reader.ReadString(8);
         }
 
         public void Write(ILineWriter writer)

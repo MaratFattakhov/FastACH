@@ -2,7 +2,7 @@
 {
     public class AchFileReadingException : Exception
     {
-        public AchFileReadingException(uint line, Exception innerException) : base($"An Error happened on {line}: {innerException}", innerException)
+        public AchFileReadingException(uint line, Exception innerException) : base($"An Error happened on {line}: {innerException.Message}", innerException)
         {
         }
     }

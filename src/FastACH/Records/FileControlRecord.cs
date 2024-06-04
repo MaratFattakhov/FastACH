@@ -62,17 +62,13 @@ namespace FastACH.Records
         [SetsRequiredMembers]
         internal FileControlRecord(ReadOnlySpan<char> data)
         {
-            if (data.Length != 94)
-            {
-                throw new ArgumentException($"Invalid File Control Record Header (8 record) length: Expected 94, Actual {data.Length}");
-            }
-
-            BatchCount = uint.Parse(data.Slice(1, 6));
-            BlockCount = uint.Parse(data.Slice(7, 6));
-            EntryAddendaCount = uint.Parse(data.Slice(13, 8));
-            EntryHash = ulong.Parse(data.Slice(21, 10));
-            TotalDebitEntryDollarAmount = decimal.Parse(data.Slice(31, 12)) / 100;
-            TotalCreditEntryDollarAmount = decimal.Parse(data.Slice(43, 12)) / 100;
+            var reader = new LineReader(data, 1);
+            BatchCount = reader.ReadUInt(6);
+            BlockCount = reader.ReadUInt(6);
+            EntryAddendaCount = reader.ReadUInt(8);
+            EntryHash = reader.ReadUInt(10);
+            TotalDebitEntryDollarAmount = reader.ReadDecimal(12) / 100;
+            TotalCreditEntryDollarAmount = reader.ReadDecimal(12) / 100;
         }
 
         public void Write(ILineWriter writer)

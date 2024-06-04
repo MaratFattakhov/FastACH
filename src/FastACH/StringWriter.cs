@@ -1,6 +1,6 @@
 ﻿namespace FastACH
 {
-    public class StringWriter : ILineWriter
+    internal class StringWriter : ILineWriter
     {
         private readonly TextWriter _streamWriter;
 

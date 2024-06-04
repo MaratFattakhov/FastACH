@@ -11,7 +11,7 @@ namespace FastACH.Benchmarks
             await writer.WriteToFile(achFile, path);
         }
 
-        private static AchFile CreateAchFile(int numberOfBatches, int numberOfEntriesInEachBatch)
+        public static AchFile CreateAchFile(int numberOfBatches, int numberOfEntriesInEachBatch)
         {
             var achFile = new AchFile()
             {

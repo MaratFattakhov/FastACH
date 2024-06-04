@@ -1,7 +1,11 @@
-[![CircleCI](https://dl.circleci.com/status-badge/img/circleci/WCT5H9fXuyQcpJQ1Sfb13U/BoxnGAvKKRXYvq1VrtDyaF/tree/master.svg?style=shield&circle-token=253f4e8ac4b2923770cf508b09a77ce98e8ff63e)](https://dl.circleci.com/status-badge/redirect/circleci/WCT5H9fXuyQcpJQ1Sfb13U/BoxnGAvKKRXYvq1VrtDyaF/tree/master)
-
 # FastACH
 .NET library for reading and writing ACH files
+
+## Continuous integration
+
+| Branch  | Build status |
+|---------|--------------|
+| master  | [![CircleCI](https://dl.circleci.com/status-badge/img/circleci/WCT5H9fXuyQcpJQ1Sfb13U/BoxnGAvKKRXYvq1VrtDyaF/tree/master.svg?style=shield&circle-token=253f4e8ac4b2923770cf508b09a77ce98e8ff63e)](https://dl.circleci.com/status-badge/redirect/circleci/WCT5H9fXuyQcpJQ1Sfb13U/BoxnGAvKKRXYvq1VrtDyaF/tree/master) |
 
 ## Installation [![NuGet](https://img.shields.io/nuget/v/FastACH.svg)](https://www.nuget.org/packages/FastACH/)
 
