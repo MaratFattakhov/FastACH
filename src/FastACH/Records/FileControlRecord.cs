@@ -66,7 +66,7 @@ namespace FastACH.Records
             BatchCount = reader.ReadUInt(6);
             BlockCount = reader.ReadUInt(6);
             EntryAddendaCount = reader.ReadUInt(8);
-            EntryHash = reader.ReadUInt(10);
+            EntryHash = reader.ReadULong(10);
             TotalDebitEntryDollarAmount = reader.ReadDecimal(12) / 100;
             TotalCreditEntryDollarAmount = reader.ReadDecimal(12) / 100;
         }
