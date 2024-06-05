@@ -1,4 +1,7 @@
-﻿namespace FastACH
+﻿using System;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
+namespace FastACH
 {
     internal ref struct LineReader
     {
@@ -7,10 +10,27 @@
         public LineReader(ReadOnlySpan<char> data)
         {
             _data = data;
+            ValidateData();
+        }
 
-            if (data.Length != 94)
+        private void ValidateData()
+        {
+            if (_data.Length != 94)
             {
-                throw new ArgumentException($"Invalid record length: Expected 94, Actual {data.Length}.");
+                throw new ArgumentException($"Invalid record length: Expected 94, Actual {_data.Length}.");
+            }
+
+            for (int i = 0; i < _data.Length; i++)
+            {
+                if (_data[i] == '\t')
+                {
+                    throw new ArgumentException($"Invalid tab at position {i}: {_data.ToString()}");
+                }
+
+                if (_data[i] >= 128)
+                {
+                    throw new ArgumentException($"Invalid character found at position {i}: {_data.ToString()}");
+                }
             }
         }
 
