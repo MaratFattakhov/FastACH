@@ -31,22 +31,22 @@ namespace FastACH.Records
         public required ulong ReceivingDFIID { get; set; }
 
         /// <summary>
-        /// Position 12-22: Check Digit (numeric)
+        /// Position 12-12: Check Digit (numeric)
         /// </summary>
         public required char CheckDigit { get; set; }
 
         /// <summary>
         /// Position 4-12: Receiving DFI Identification (numeric) with Check Digit (numeric)
         /// </summary>
-        public string FullReceivingDFIID
-        {
-            get => ReceivingDFIID.ToString().PadLeft(8, '0') + CheckDigit;
-            set
-            {
-                ReceivingDFIID = ulong.Parse(value.Substring(0, 8));
-                CheckDigit = value[8];
-            }
-        }
+        //internal string FullReceivingDFIID
+        //{
+        //    get => ReceivingDFIID.ToString().PadLeft(8, '0') + CheckDigit;
+        //    set
+        //    {
+        //        ReceivingDFIID = ulong.Parse(value.Substring(0, 8));
+        //        CheckDigit = value[8];
+        //    }
+        //}
 
         /// <summary>
         /// Position 13-29: DFIAccount Number (alpha-numeric)
