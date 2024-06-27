@@ -14,8 +14,8 @@ var achFile = new AchFile()
         ImmediateOriginName = "Microsoft Inc.",
         ReferenceCode = "00000000"
     },
-    BatchRecordList = new List<BatchRecord>()
-    {
+    BatchRecordList =
+    [
         new BatchRecord()
         {
             BatchHeader = new BatchHeaderRecord()
@@ -68,9 +68,7 @@ var achFile = new AchFile()
                 }
             }
         }
-    }
+    ]
 };
 
-var writer = new AchFileWriter();
-
-await writer.WriteToFile(achFile, "..\\..\\..\\ACH.txt");
+await achFile.WriteToFile("..\\..\\..\\ACH.txt");

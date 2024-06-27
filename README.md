@@ -22,13 +22,9 @@ using FastACH;
 
 ### Reading ACH file
 ``` csharp
-var reader = new AchFileReader();
+var achFile = await AchFile.Read("ACH.txt");
 
-var achFile = await reader.Read("ACH.txt");
-
-var achFileWriter = new AchFileWriter();
-
-achFileWriter.WriteToConsole(achFile); // Output to console
+achFile.WriteToConsole(); // Output to console
 ```
 
 ### Writing ACH file
@@ -103,9 +99,7 @@ var achFile = new AchFile()
     }
 };
 
-var writer = new AchFileWriter();
-
-await writer.WriteToFile(achFile, "ACH.txt");
+await achFile.WriteToFile("ACH.txt");
 ```
 
 ## Perfomance results

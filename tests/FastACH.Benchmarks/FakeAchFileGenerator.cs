@@ -7,8 +7,7 @@ namespace FastACH.Benchmarks
         public static async Task CreateAchFile(string path, int numberOfEntries)
         {
             var achFile = CreateAchFile(numberOfEntries / 10, 10);
-            var writer = new AchFileWriter();
-            await writer.WriteToFile(achFile, path);
+            await achFile.WriteToFile(path);
         }
 
         public static AchFile CreateAchFile(int numberOfBatches, int numberOfEntriesInEachBatch)

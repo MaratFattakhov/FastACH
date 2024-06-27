@@ -23,8 +23,7 @@ namespace FastACH.Benchmarks
         [Benchmark]
         public async Task FastACH()
         {
-            var reader = new AchFileReader();
-            var achFile = await reader.Read(achFileName);
+            var achFile = await AchFile.Read(achFileName);
             if (achFile.BatchRecordList.Count != (NumberOfEntries / 10))
             {
                 throw new Exception("Incorrect number of batches : " + achFile.BatchRecordList.Count);

@@ -29,8 +29,6 @@
                 default:
                     throw new NotImplementedException();
             }
-
-            // obe record
         }
 
         private static ConsoleWriter CreateForNineRecord()

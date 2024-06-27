@@ -36,6 +36,19 @@ namespace FastACH.Records
         public required char CheckDigit { get; set; }
 
         /// <summary>
+        /// Position 4-12: Receiving DFI Identification (numeric) with Check Digit (numeric)
+        /// </summary>
+        public string FullReceivingDFIID
+        {
+            get => ReceivingDFIID.ToString().PadLeft(8, '0') + CheckDigit;
+            set
+            {
+                ReceivingDFIID = ulong.Parse(value.Substring(0, 8));
+                CheckDigit = value[8];
+            }
+        }
+
+        /// <summary>
         /// Position 13-29: DFIAccount Number (alpha-numeric)
         /// </summary>
         public required string DFIAccountNumber { get; set; }
@@ -110,12 +123,6 @@ namespace FastACH.Records
             writer.Write(DiscretionaryData, 2);
             writer.Write(AddendaRecordIndicator ? "1" : "0", 1);
             writer.Write(TraceNumber, 15);
-        }
-
-        public string GetRoutingNumber()
-        {
-            var routingNumberString = ReceivingDFIID.ToString().PadLeft(8, '0');
-            return routingNumberString + CheckDigit;
         }
     }
 }

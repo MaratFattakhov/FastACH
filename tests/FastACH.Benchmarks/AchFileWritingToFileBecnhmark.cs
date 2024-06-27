@@ -24,8 +24,7 @@ namespace FastACH.Benchmarks
         [Benchmark]
         public async Task FastACH()
         {
-            var writer = new AchFileWriter();
-            await writer.WriteToFile(_achFile!, achFileName);
+            await _achFile!.WriteToFile(achFileName);
         }
 
         [Benchmark]

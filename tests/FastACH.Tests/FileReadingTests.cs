@@ -2,16 +2,13 @@
 
 namespace FastACH.Tests
 {
-    public class AchFileReaderTests
+    public class FileReadingTests
     {
         [Fact]
         public async Task Read_Returns_AchFile()
         {
-            // Arrange
-            var target = new AchFileReader();
-
-            // Act
-            var actual = await target.Read("..\\..\\..\\ACH.txt");
+            // Arrange && Act
+            var actual = await AchFile.Read("..\\..\\..\\ACH.txt");
 
             // Assert
             actual.Should().NotBeNull();

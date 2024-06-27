@@ -13,15 +13,13 @@ namespace FastACH
         public FileControlRecord FileControl { get; set; } = FileControlRecord.Empty;
 
         /// <summary>
-        /// Recalculates Nine record totals, usually used as you want to write the file somewhere.
+        /// Recalculates control records, usually used as you want to write the file somewhere.
         /// </summary>
-        public void RecalculateTotals(
-            Func<ulong> batchNumberGenerator,
-            Func<string> traceNumberGenerator)
+        public void RecalculateTotals(WritingOptions options)
         {
             foreach (var batchRecord in BatchRecordList)
             {
-                RecalculateTotals(batchRecord, batchNumberGenerator, traceNumberGenerator);
+                RecalculateTotals(batchRecord, options);
             }
 
             var itemsCount = BatchRecordList.SelectMany(x =>
@@ -39,13 +37,164 @@ namespace FastACH
             FileControl.TotalDebitEntryDollarAmount = BatchRecordList.Sum(p => p.BatchControl.TotalDebitEntryDollarAmount);
         }
 
+        public async Task WriteToFile(string filePath, Action<WritingOptions>? configure = null, CancellationToken ct = default)
+        {
+            var options = new WritingOptions(this);
+
+            configure?.Invoke(options);
+
+            if (options.UpdateControlRecords)
+            {
+                RecalculateTotals(options);
+            }
+
+            using var memoryStream = new MemoryStream();
+            using var streamWriter = new StreamWriter(memoryStream);
+            var writer = new StringWriter(streamWriter);
+            WriteToStream(streamWriter, this, options.BlockingFactor, _ => writer);
+
+            await streamWriter.FlushAsync();
+            memoryStream.Position = 0;
+            using var fileStream = new FileStream(filePath, FileMode.Create);
+            await memoryStream.CopyToAsync(fileStream, ct);
+            await fileStream.FlushAsync(ct);
+        }
+
+        public void WriteToConsole(Action<WritingOptions>? configure = null)
+        {
+            var options = new WritingOptions(this);
+
+            configure?.Invoke(options);
+
+            if (options.UpdateControlRecords)
+            {
+                RecalculateTotals(options);
+            }
+
+            WriteToStream(Console.Out, this, options.BlockingFactor, ConsoleWriter.CreateForRecord);
+        }
+
+        public static void WriteToStream(
+            TextWriter writer,
+            AchFile achFile,
+            uint blockingFactor,
+            Func<IRecord, ILineWriter> getLineWriter)
+        {
+            var lineNumber = 0;
+            WriteToStream(writer, achFile.FileHeader, getLineWriter, ref lineNumber);
+
+            foreach (var batchRecord in achFile.BatchRecordList)
+            {
+                WriteToStream(writer, batchRecord.BatchHeader, getLineWriter, ref lineNumber);
+
+                foreach (var transactionDetails in batchRecord.TransactionRecords)
+                {
+                    WriteToStream(writer, transactionDetails.EntryDetail, getLineWriter, ref lineNumber);
+
+                    if (transactionDetails.Addenda != null)
+                    {
+                        WriteToStream(writer, transactionDetails.Addenda, getLineWriter, ref lineNumber);
+                    }
+                }
+
+                WriteToStream(writer, batchRecord.BatchControl, getLineWriter, ref lineNumber);
+            }
+
+            WriteToStream(writer, achFile.FileControl, getLineWriter, ref lineNumber, false);
+
+            // write extra fillers so block count is even at batch size, default=10
+            for (long i = lineNumber; i < achFile.FileControl.BlockCount * blockingFactor; i++)
+            {
+                writer.WriteLine();
+                writer.Write(new string('9', 94));
+            }
+        }
+
+        /// <summary>
+        /// Breaks file into objects, based on the NACHA file specification.
+        /// </summary>
+        /// <exception cref="AchFileReadingException">Thrown when the file is not in the correct format.</exception></exception>
+        public static async Task<AchFile> Read(string filePath, CancellationToken cancellationToken = default)
+        {
+            using StreamReader streamReader = new(filePath);
+            var content = await streamReader.ReadToEndAsync(cancellationToken);
+            return ReadFromContent(content.AsSpan());
+        }
+
+        private static AchFile ReadFromContent(ReadOnlySpan<char> content)
+        {
+            var batchRecordList = new List<BatchRecord>();
+            FileHeaderRecord? fileHeaderRecord = null;
+            BatchRecord? currentBatch = null;
+            uint lineNumber = 0;
+            try
+            {
+                foreach (var line in content.EnumerateLines())
+                {
+                    lineNumber++;
+                    switch (line.Slice(0, 1))
+                    {
+                        case "1":
+                            FileHeaderRecord oneRecord = new(line);
+                            fileHeaderRecord = oneRecord;
+                            break;
+
+                        case "5":
+                            BatchHeaderRecord fiveRecord = new(line);
+                            currentBatch = new BatchRecord() { BatchHeader = fiveRecord };
+                            break;
+
+                        case "6":
+                            EntryDetailRecord sixRecord = new(line);
+                            if (currentBatch is null)
+                                throw new InvalidOperationException("No batch record found for entry record");
+                            var transactionDetails = new TransactionRecord() { EntryDetail = sixRecord, Addenda = null };
+                            currentBatch.TransactionRecords.Add(transactionDetails);
+                            break;
+
+                        case "7":
+                            AddendaRecord sevenRecord = new(line);
+                            if (currentBatch is null)
+                                throw new InvalidOperationException("No batch record found for entry record");
+                            currentBatch.TransactionRecords.Last().Addenda = sevenRecord;
+                            break;
+
+                        case "8":
+                            BatchControlRecord eightRecord = new(line);
+                            if (currentBatch is null)
+                                throw new InvalidOperationException("No batch record found for entry record");
+                            currentBatch.BatchControl = eightRecord;
+                            batchRecordList.Add(currentBatch);
+                            break;
+
+                        case "9":
+                            FileControlRecord nineRecord = new(line);
+                            return new AchFile()
+                            {
+                                BatchRecordList = batchRecordList,
+                                FileControl = nineRecord,
+                                FileHeader = fileHeaderRecord ?? throw new InvalidOperationException("Missing File Header Record."),
+                            };
+
+                        default:
+                            break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new AchFileReadingException(lineNumber, ex);
+            }
+
+            throw new InvalidOperationException("ACH File doesn't contain termination file control (9) record.");
+        }
+
         private void RecalculateTotals(
             BatchRecord batch,
-            Func<ulong> batchNumberGenerator,
-            Func<string> traceNumberGenerator)
+            WritingOptions options)
         {
-            UpdateBatchNumbers(batch, batchNumberGenerator);
-            UpdateTraceNumbers(batch, traceNumberGenerator);
+            UpdateBatchNumbers(batch, options);
+            UpdateTraceNumbers(batch, options);
             batch.BatchControl = Create(batch.BatchHeader, batch.TransactionRecords);
         }
 
@@ -66,17 +215,17 @@ namespace FastACH
             };
         }
 
-        private void UpdateBatchNumbers(BatchRecord batch, Func<ulong> batchNumberGenerator)
+        private void UpdateBatchNumbers(BatchRecord batch, WritingOptions options)
         {
-            var batchNumber = batchNumberGenerator();
+            var batchNumber = options.GetNextBatchNumber();
             batch.BatchHeader.BatchNumber = batchNumber;
         }
 
-        private void UpdateTraceNumbers(BatchRecord batch, Func<string> traceNumberGenerator)
+        private void UpdateTraceNumbers(BatchRecord batch, WritingOptions options)
         {
             foreach (var transactionDetails in batch.TransactionRecords)
             {
-                var traceNumber = traceNumberGenerator();
+                var traceNumber = options.GetNextTraceNumber();
                 transactionDetails.EntryDetail.TraceNumber = traceNumber;
 
                 if (transactionDetails.EntryDetail.AddendaRecordIndicator && transactionDetails.Addenda != null)
@@ -85,6 +234,20 @@ namespace FastACH
                         traceNumber.Substring(traceNumber.Length - 7, 7));
                 }
             }
+        }
+
+        private static void WriteToStream(
+            TextWriter writer,
+            IRecord record,
+            Func<IRecord, ILineWriter> getLineWriter,
+            ref int lineNumber,
+            bool newLine = true)
+        {
+            lineNumber++;
+            var lineWriter = getLineWriter(record);
+            record.Write(lineWriter);
+
+            if (newLine) writer.WriteLine();
         }
     }
 }
