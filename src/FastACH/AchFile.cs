@@ -15,11 +15,11 @@ namespace FastACH
         /// <summary>
         /// Recalculates control records, usually used as you want to write the file somewhere.
         /// </summary>
-        public void RecalculateTotals(WritingOptions options)
+        public void UpdateControlRecords(WritingOptions options)
         {
             foreach (var batchRecord in BatchRecordList)
             {
-                RecalculateTotals(batchRecord, options);
+                UpdateControlRecords(batchRecord, options);
             }
 
             var itemsCount = BatchRecordList.SelectMany(x =>
@@ -37,15 +37,20 @@ namespace FastACH
             FileControl.TotalDebitEntryDollarAmount = BatchRecordList.Sum(p => p.BatchControl.TotalDebitEntryDollarAmount);
         }
 
-        public async Task WriteToFile(string filePath, Action<WritingOptions>? configure = null, CancellationToken ct = default)
+        public Task WriteToFile(string filePath, CancellationToken ct = default)
+        {
+            return WriteToFile(filePath, _ => { }, ct);
+        }
+
+        public async Task WriteToFile(string filePath, Action<WritingOptions> configure, CancellationToken ct = default)
         {
             var options = new WritingOptions(this);
 
-            configure?.Invoke(options);
+            configure(options);
 
             if (options.UpdateControlRecords)
             {
-                RecalculateTotals(options);
+                UpdateControlRecords(options);
             }
 
             using var memoryStream = new MemoryStream();
@@ -68,7 +73,7 @@ namespace FastACH
 
             if (options.UpdateControlRecords)
             {
-                RecalculateTotals(options);
+                UpdateControlRecords(options);
             }
 
             WriteToStream(Console.Out, this, options.BlockingFactor, ConsoleWriter.CreateForRecord);
@@ -189,7 +194,7 @@ namespace FastACH
             throw new InvalidOperationException("ACH File doesn't contain termination file control (9) record.");
         }
 
-        private void RecalculateTotals(
+        private void UpdateControlRecords(
             BatchRecord batch,
             WritingOptions options)
         {
