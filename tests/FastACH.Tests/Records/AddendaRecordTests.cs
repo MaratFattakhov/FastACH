@@ -16,7 +16,7 @@ namespace FastACH.Tests.Records
             var s = $"705{addendaInformation,-80}{addendaSequenceNumber:0000}{entryDetailSequenceNumber:0000000}";
 
             // Act
-            var record = new AddendaRecord(s, 1);
+            var record = new AddendaRecord(s, 0);
 
             // Assert
             record.Should().BeEquivalentTo(new AddendaRecord()

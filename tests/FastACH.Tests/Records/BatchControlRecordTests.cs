@@ -22,7 +22,7 @@ namespace FastACH.Tests.Records
             var s = $"8{serviceClassCode}{entryAddendaCount,6}{entryHash,10}{(uint)(debit * 100),12}{(uint)(credit * 100),12}{companyId,10}{authCode,19}      {dfiId,8}{batchNumber,7}";
 
             // Act
-            var record = new BatchControlRecord(s, 1);
+            var record = new BatchControlRecord(s, 0);
 
             // Assert
             record.Should().BeEquivalentTo(new BatchControlRecord()
