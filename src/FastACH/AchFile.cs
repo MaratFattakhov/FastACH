@@ -154,17 +154,17 @@ namespace FastACH
                     switch (line.Slice(0, 1))
                     {
                         case "1":
-                            FileHeaderRecord oneRecord = new(line);
+                            FileHeaderRecord oneRecord = new(line, lineNumber);
                             fileHeaderRecord = oneRecord;
                             break;
 
                         case "5":
-                            BatchHeaderRecord fiveRecord = new(line);
+                            BatchHeaderRecord fiveRecord = new(line, lineNumber);
                             currentBatch = new BatchRecord() { BatchHeader = fiveRecord };
                             break;
 
                         case "6":
-                            EntryDetailRecord sixRecord = new(line);
+                            EntryDetailRecord sixRecord = new(line, lineNumber);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
                             var transactionDetails = new TransactionRecord() { EntryDetail = sixRecord, Addenda = null };
@@ -172,14 +172,14 @@ namespace FastACH
                             break;
 
                         case "7":
-                            AddendaRecord sevenRecord = new(line);
+                            AddendaRecord sevenRecord = new(line, lineNumber);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
                             currentBatch.TransactionRecords.Last().Addenda = sevenRecord;
                             break;
 
                         case "8":
-                            BatchControlRecord eightRecord = new(line);
+                            BatchControlRecord eightRecord = new(line, lineNumber);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
                             currentBatch.BatchControl = eightRecord;
@@ -187,7 +187,7 @@ namespace FastACH
                             break;
 
                         case "9":
-                            FileControlRecord nineRecord = new(line);
+                            FileControlRecord nineRecord = new(line, lineNumber);
                             return new AchFile()
                             {
                                 BatchRecordList = batchRecordList,

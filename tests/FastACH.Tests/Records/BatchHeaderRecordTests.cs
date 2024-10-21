@@ -25,7 +25,7 @@ namespace FastACH.Tests.Records
             var s = $"5{serviceClassCode}{companyName,-16}{companyDiscretionaryData,-20}{companyId,-10}{standardEntryClassCode}{companyEntryDescription,-10}{companyDescriptiveDate}{effectiveEntryDate}{julianSettlementDate,-3}{originatorStatusCode}{originatingDFIID,8}{batchNumber:0000000}";
 
             // Act
-            var record = new BatchHeaderRecord(s);
+            var record = new BatchHeaderRecord(s, 1);
 
             // Assert
             record.Should().BeEquivalentTo(new BatchHeaderRecord()

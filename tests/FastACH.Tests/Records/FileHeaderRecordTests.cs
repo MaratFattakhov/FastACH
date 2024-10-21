@@ -21,7 +21,7 @@ namespace FastACH.Tests.Records
             var s = $"101{immediateDestination,10}{immediateOrigin,10}{fileCreationDate}{fileCreationTime}{fileIdModifier}094101{immediateDestinationName,-23}{immediateOriginName,-23}{referenceCode,-8}";
 
             // Act
-            var record = new FileHeaderRecord(s);
+            var record = new FileHeaderRecord(s, 1);
 
             // Assert
             record.Should().BeEquivalentTo(new FileHeaderRecord

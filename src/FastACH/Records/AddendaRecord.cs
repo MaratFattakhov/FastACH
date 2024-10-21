@@ -5,7 +5,7 @@ namespace FastACH.Records
     /// <summary>
     /// Addenda Record (7 record)
     /// </summary>
-    public record class AddendaRecord : IRecord
+    public record class AddendaRecord : BaseRecord, IRecord
     {
         // Position 1-1: Record Type Code (numeric)
         public string RecordTypeCode => "7";
@@ -33,13 +33,14 @@ namespace FastACH.Records
         }
 
         [SetsRequiredMembers]
-        internal AddendaRecord(ReadOnlySpan<char> data)
+        internal AddendaRecord(ReadOnlySpan<char> data, uint lineNumber)
         {
             var reader = new LineReader(data, 1);
             AddendaTypeCode = reader.ReadUInt(2);
             AddendaInformation = reader.ReadString(80);
             AddendaSequenceNumber = reader.ReadUInt(4);
             EntryDetailSequenceNumber = reader.ReadULong(7);
+            LineNumber = lineNumber;
         }
 
         public void Write(ILineWriter writer)
