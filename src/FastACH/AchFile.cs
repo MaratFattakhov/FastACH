@@ -126,18 +126,6 @@ namespace FastACH
             return ReadFromContent(content.AsSpan());
         }
 
-        private static void CheckForInvalidCharOrTab(string line)
-        {
-            if (line.ToString().Contains("\t"))
-                throw new InvalidOperationException("File contains tabs");
-
-            foreach (var chtr in line)  //chtr stands for character
-            {
-                if (chtr >= 128)
-                    throw new InvalidOperationException("File contains invalid characters");
-            }
-        }
-
         private static AchFile ReadFromContent(ReadOnlySpan<char> content)
         {
             var batchRecordList = new List<BatchRecord>();
@@ -148,8 +136,6 @@ namespace FastACH
             {
                 foreach (var line in content.EnumerateLines())
                 {
-                    CheckForInvalidCharOrTab(line.ToString());
-
                     lineNumber++;
                     switch (line.Slice(0, 1))
                     {
