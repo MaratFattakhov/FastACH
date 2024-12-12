@@ -45,10 +45,12 @@ var achFile = new AchFile()
                         DiscretionaryData = "Desc Data",
                         AddendaRecordIndicator = true,
                     },
-                    Addenda = new AddendaRecord()
-                    {
-                        AddendaInformation = "Monthly bill"
-                    }
+                    AddendaRecords = [
+                        new()
+                        {
+                            AddendaInformation = "Monthly bill"
+                        }
+                    ]
                 },
                 new TransactionRecord()
                 {
@@ -64,7 +66,7 @@ var achFile = new AchFile()
                         DiscretionaryData = "Desc Data",
                         AddendaRecordIndicator = false,
                     },
-                    Addenda = null
+                    AddendaRecords = []
                 }
             }
         }

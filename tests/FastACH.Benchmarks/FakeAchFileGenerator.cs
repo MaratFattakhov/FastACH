@@ -69,7 +69,7 @@ namespace FastACH.Benchmarks
                     DiscretionaryData = "Desc Data",
                     AddendaRecordIndicator = false,
                 },
-                Addenda = null
+                AddendaRecords = []
                 //Addenda = new AddendaRecord()
                 //{
                 //    AddendaInformation = "Monthly bill"

@@ -23,7 +23,7 @@ namespace FastACH
             }
 
             var itemsCount = BatchRecordList.SelectMany(x =>
-                x.TransactionRecords.Select(p => p.Addenda is not null ? 2 : 1)).Sum()
+                x.TransactionRecords.Select(p => p.AddendaRecords.Count + 1)).Sum()
                 + BatchRecordList.Count * 2 // 2 for batch header and batch control
                 + 2; // 2 for file header and file control
 
@@ -96,9 +96,9 @@ namespace FastACH
                 {
                     WriteToStream(writer, transactionDetails.EntryDetail, getLineWriter, ref lineNumber);
 
-                    if (transactionDetails.Addenda != null)
+                    foreach (var addendaRecord in transactionDetails.AddendaRecords)
                     {
-                        WriteToStream(writer, transactionDetails.Addenda, getLineWriter, ref lineNumber);
+                        WriteToStream(writer, addendaRecord, getLineWriter, ref lineNumber);
                     }
                 }
 
@@ -153,7 +153,7 @@ namespace FastACH
                             EntryDetailRecord sixRecord = new(line, lineNumber);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
-                            var transactionDetails = new TransactionRecord() { EntryDetail = sixRecord, Addenda = null };
+                            var transactionDetails = new TransactionRecord() { EntryDetail = sixRecord };
                             currentBatch.TransactionRecords.Add(transactionDetails);
                             break;
 
@@ -161,7 +161,7 @@ namespace FastACH
                             AddendaRecord sevenRecord = new(line, lineNumber);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch record found for entry record");
-                            currentBatch.TransactionRecords.Last().Addenda = sevenRecord;
+                            currentBatch.TransactionRecords.Last().AddendaRecords.Add(sevenRecord);
                             break;
 
                         case "8":
@@ -209,7 +209,7 @@ namespace FastACH
             {
                 BatchNumber = batchHeader.BatchNumber,
                 ServiceClassCode = batchHeader.ServiceClassCode,
-                EntryAddendaCount = (uint)transactionDetails.Count + (uint)transactionDetails.Where(x => x.Addenda != null).Count(),
+                EntryAddendaCount = (uint)transactionDetails.Count + (uint)transactionDetails.Sum(x => x.AddendaRecords.Count),
                 EntryHash = transactionDetails
                     .Select(p => p.EntryDetail.ReceivingDFIID)
                     .Aggregate((ulong)0, (a, b) => a + b),
@@ -233,9 +233,14 @@ namespace FastACH
                 var traceNumber = options.GetNextTraceNumber();
                 transactionDetails.EntryDetail.TraceNumber = traceNumber;
 
-                if (transactionDetails.EntryDetail.AddendaRecordIndicator && transactionDetails.Addenda != null)
+                if (!transactionDetails.EntryDetail.AddendaRecordIndicator) continue;
+
+                var getNextAddendaSequenceNumber = options.GetAddendaSequenceNumberGenerator();
+
+                foreach (var addendaRecord in transactionDetails.AddendaRecords)
                 {
-                    transactionDetails.Addenda.EntryDetailSequenceNumber = ulong.Parse(
+                    addendaRecord.AddendaSequenceNumber = getNextAddendaSequenceNumber();
+                    addendaRecord.EntryDetailSequenceNumber = ulong.Parse(
                         traceNumber.Substring(traceNumber.Length - 7, 7));
                 }
             }

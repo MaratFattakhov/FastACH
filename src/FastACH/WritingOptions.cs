@@ -21,6 +21,12 @@
             return _traceNumberGenerator();
         }
 
+        public virtual Func<uint> GetAddendaSequenceNumberGenerator()
+        {
+            var addendaSequenceNumber = 0u;
+            return new Func<uint>(() => ++addendaSequenceNumber);
+        }
+
         public uint BlockingFactor { get; set; } = 10;
 
         public bool UpdateControlRecords { get; set; } = true;
