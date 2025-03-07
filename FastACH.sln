@@ -35,6 +35,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastACH.WriteToFile", "exam
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastACH.Benchmarks", "tests\FastACH.Benchmarks\FastACH.Benchmarks.csproj", "{1747E35F-20BF-4E55-8FAC-AAA490AB7B1A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FastACH.WriteToStream", "examples\FastACH.WriteToStream\FastACH.WriteToStream.csproj", "{38FF4AD7-C8E9-473B-BF77-C09F78C34147}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,10 @@ Global
 		{1747E35F-20BF-4E55-8FAC-AAA490AB7B1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1747E35F-20BF-4E55-8FAC-AAA490AB7B1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1747E35F-20BF-4E55-8FAC-AAA490AB7B1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38FF4AD7-C8E9-473B-BF77-C09F78C34147}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38FF4AD7-C8E9-473B-BF77-C09F78C34147}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38FF4AD7-C8E9-473B-BF77-C09F78C34147}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38FF4AD7-C8E9-473B-BF77-C09F78C34147}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -77,6 +83,7 @@ Global
 		{B74C8264-B9F8-49DA-87C2-79A7CAD50F1D} = {48808604-49A1-462F-AC55-491E0E299FBE}
 		{407D7EC7-AD1B-4765-8ED7-9BF665E4037D} = {48808604-49A1-462F-AC55-491E0E299FBE}
 		{1747E35F-20BF-4E55-8FAC-AAA490AB7B1A} = {004AAAE5-A97B-4C28-BE0E-605A59E49B3C}
+		{38FF4AD7-C8E9-473B-BF77-C09F78C34147} = {48808604-49A1-462F-AC55-491E0E299FBE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {FBBA2E05-4AB4-4619-9E7A-0ED55C7E6E8B}

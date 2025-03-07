@@ -37,35 +37,41 @@ namespace FastACH
             FileControl.TotalDebitEntryDollarAmount = BatchRecordList.Sum(p => p.BatchControl.TotalDebitEntryDollarAmount);
         }
 
-        public Task WriteToFile(string filePath, CancellationToken ct = default)
-        {
-            return WriteToFile(filePath, _ => { }, ct);
-        }
+        public Task WriteToFile(string filePath, CancellationToken ct = default) => WriteToFile(filePath, _ => { }, ct);
 
         public async Task WriteToFile(string filePath, Action<WritingOptions> configure, CancellationToken ct = default)
         {
-            var options = new WritingOptions(this);
-
-            configure(options);
-
-            if (options.UpdateControlRecords)
-            {
-                UpdateControlRecords(options);
-            }
-
             using var memoryStream = new MemoryStream();
             using var streamWriter = new StreamWriter(memoryStream);
             var writer = new StringWriter(streamWriter);
-            WriteToStream(streamWriter, this, options.BlockingFactor, _ => writer);
-
+            Write(streamWriter, configure, _ => writer);
             await streamWriter.FlushAsync();
             memoryStream.Position = 0;
+
             using var fileStream = new FileStream(filePath, FileMode.Create);
             await memoryStream.CopyToAsync(fileStream, ct);
             await fileStream.FlushAsync(ct);
         }
 
+        public Task WriteToStream(Stream stream, CancellationToken ct = default) => WriteToStream(stream, _ => { }, ct);
+
+        public Task WriteToStream(Stream stream, Action<WritingOptions> configure, CancellationToken ct = default)
+        {
+            using var streamWriter = new StreamWriter(stream);
+            var writer = new StringWriter(streamWriter);
+            Write(streamWriter, configure, _ => writer);
+            return Task.CompletedTask;
+        }
+
         public void WriteToConsole(Action<WritingOptions>? configure = null)
+        {
+            Write(Console.Out, configure, ConsoleWriter.CreateForRecord);
+        }
+
+        private void Write(
+            TextWriter writer,
+            Action<WritingOptions>? configure,
+            Func<IRecord, ILineWriter> getLineWriter)
         {
             var options = new WritingOptions(this);
 
@@ -76,19 +82,10 @@ namespace FastACH
                 UpdateControlRecords(options);
             }
 
-            WriteToStream(Console.Out, this, options.BlockingFactor, ConsoleWriter.CreateForRecord);
-        }
-
-        public static void WriteToStream(
-            TextWriter writer,
-            AchFile achFile,
-            uint blockingFactor,
-            Func<IRecord, ILineWriter> getLineWriter)
-        {
             var lineNumber = 0;
-            WriteToStream(writer, achFile.FileHeader, getLineWriter, ref lineNumber);
+            WriteToStream(writer, FileHeader, getLineWriter, ref lineNumber);
 
-            foreach (var batchRecord in achFile.BatchRecordList)
+            foreach (var batchRecord in BatchRecordList)
             {
                 WriteToStream(writer, batchRecord.BatchHeader, getLineWriter, ref lineNumber);
 
@@ -105,10 +102,10 @@ namespace FastACH
                 WriteToStream(writer, batchRecord.BatchControl, getLineWriter, ref lineNumber);
             }
 
-            WriteToStream(writer, achFile.FileControl, getLineWriter, ref lineNumber, false);
+            WriteToStream(writer, FileControl, getLineWriter, ref lineNumber, false);
 
             // write extra fillers so block count is even at batch size, default=10
-            for (long i = lineNumber; i < achFile.FileControl.BlockCount * blockingFactor; i++)
+            for (long i = lineNumber; i < FileControl.BlockCount * options.BlockingFactor; i++)
             {
                 writer.WriteLine();
                 writer.Write(new string('9', 94));

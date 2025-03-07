@@ -18,5 +18,21 @@ namespace FastACH.Tests
             var actual = await File.ReadAllLinesAsync("..\\..\\..\\ACH_saved.txt");
             actual.Should().BeEquivalentTo(expected);
         }
+
+        [Fact]
+        public async Task WriteToStream_Writes_The_Same_File()
+        {
+            // Arrange
+            var achFile = await AchFile.Read("..\\..\\..\\ACH.txt");
+            var expected = await File.ReadAllBytesAsync("..\\..\\..\\ACH.txt");
+
+            // Act
+            using var memoryStream = new MemoryStream();
+            await achFile.WriteToStream(memoryStream, p => p.UpdateControlRecords = false, default);
+
+            // Assert
+            var actual = memoryStream.ToArray();
+            actual.Should().BeEquivalentTo(expected);
+        }
     }
 }
