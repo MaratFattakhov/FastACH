@@ -1,4 +1,5 @@
 ﻿using FastACH.Records;
+using System.Text;
 
 namespace FastACH
 {
@@ -42,7 +43,7 @@ namespace FastACH
         public async Task WriteToFile(string filePath, Action<WritingOptions> configure, CancellationToken ct = default)
         {
             using var memoryStream = new MemoryStream();
-            using var streamWriter = new StreamWriter(memoryStream);
+            using var streamWriter = new StreamWriter(memoryStream, Encoding.ASCII);
             var writer = new StringWriter(streamWriter);
             Write(streamWriter, configure, _ => writer);
             await streamWriter.FlushAsync();
@@ -57,7 +58,7 @@ namespace FastACH
 
         public Task WriteToStream(Stream stream, Action<WritingOptions> configure, CancellationToken ct = default)
         {
-            using var streamWriter = new StreamWriter(stream);
+            using var streamWriter = new StreamWriter(stream, Encoding.ASCII);
             var writer = new StringWriter(streamWriter);
             Write(streamWriter, configure, _ => writer);
             return Task.CompletedTask;
@@ -118,7 +119,7 @@ namespace FastACH
         /// <exception cref="AchFileReadingException">Thrown when the file is not in the correct format.</exception></exception>
         public static async Task<AchFile> Read(string filePath, CancellationToken cancellationToken = default)
         {
-            using StreamReader streamReader = new(filePath);
+            using StreamReader streamReader = new(filePath, Encoding.ASCII);
             var content = await streamReader.ReadToEndAsync(cancellationToken);
             return ReadFromContent(content.AsSpan());
         }
@@ -142,6 +143,8 @@ namespace FastACH
                             break;
 
                         case "5":
+                            if (currentBatch?.BatchControl == BatchControlRecord.Empty)
+                                throw new InvalidOperationException("Batch control (8) record is missing for batch header record.");
                             BatchHeaderRecord fiveRecord = new(line, lineNumber);
                             currentBatch = new BatchRecord() { BatchHeader = fiveRecord };
                             break;
@@ -149,7 +152,7 @@ namespace FastACH
                         case "6":
                             EntryDetailRecord sixRecord = new(line, lineNumber);
                             if (currentBatch is null)
-                                throw new InvalidOperationException("No batch record found for entry record");
+                                throw new InvalidOperationException("No batch (5) record found for entry record");
                             var transactionDetails = new TransactionRecord() { EntryDetail = sixRecord };
                             currentBatch.TransactionRecords.Add(transactionDetails);
                             break;
@@ -157,19 +160,21 @@ namespace FastACH
                         case "7":
                             AddendaRecord sevenRecord = new(line, lineNumber);
                             if (currentBatch is null)
-                                throw new InvalidOperationException("No batch record found for entry record");
+                                throw new InvalidOperationException("No batch (5) record found for entry record");
                             currentBatch.TransactionRecords.Last().AddendaRecords.Add(sevenRecord);
                             break;
 
                         case "8":
                             BatchControlRecord eightRecord = new(line, lineNumber);
                             if (currentBatch is null)
-                                throw new InvalidOperationException("No batch record found for entry record");
+                                throw new InvalidOperationException("No batch (5) record found for entry record");
                             currentBatch.BatchControl = eightRecord;
                             batchRecordList.Add(currentBatch);
                             break;
 
                         case "9":
+                            if (currentBatch?.BatchControl == BatchControlRecord.Empty)
+                                throw new InvalidOperationException("Batch control (8) record is missing for batch header record.");
                             FileControlRecord nineRecord = new(line, lineNumber);
                             return new AchFile()
                             {

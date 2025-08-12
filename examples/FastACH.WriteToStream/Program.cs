@@ -76,4 +76,4 @@ var achFile = new AchFile()
 
 using var stream = new MemoryStream();
 await achFile.WriteToStream(stream);
-Console.WriteLine(Encoding.UTF8.GetString(stream.ToArray()));
+Console.WriteLine(Encoding.ASCII.GetString(stream.ToArray()));
