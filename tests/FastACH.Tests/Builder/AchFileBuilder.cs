@@ -1,7 +1,7 @@
 ﻿using FastACH.Records;
 using System.Globalization;
 
-namespace FastACH.Tests.Buidler
+namespace FastACH.Tests.Builder
 {
     internal sealed class AchFileBuilder
     {

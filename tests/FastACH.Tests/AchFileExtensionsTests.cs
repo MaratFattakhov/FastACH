@@ -1,4 +1,4 @@
-﻿using FastACH.Tests.Buidler;
+﻿using FastACH.Tests.Builder;
 using FluentAssertions;
 
 namespace FastACH.Tests
