@@ -120,11 +120,11 @@ await achFile.WriteToFile("ACH.txt");
 
 I created a benchmark to compare reading performance between FastACH and very popular [ChoETL.Nacha library](https://github.com/Cinchoo/ChoETL.NACHA).
 
-| Method      | NumberOfEntries | Mean          | Error | Gen0          | Gen1          | Gen2          | Allocated       |
-|------------ |---------------- |--------------:|------:|--------------:|--------------:|--------------:|----------------:|
-| FastACH     | 1000            |      7.641 ms |    NA |             - |             - |             - |       909.02 KB |
-| ChoetlNacha | 1000            |    734.524 ms |    NA |   287000.0000 |   282000.0000 |   282000.0000 |   3764876.44 KB |
-| FastACH     | 10000           |     17.351 ms |    NA |             - |             - |             - |      8888.17 KB |
-| ChoetlNacha | 10000           |  3,981.774 ms |    NA |  1881000.0000 |  1824000.0000 |  1824000.0000 |  37550128.94 KB |
-| FastACH     | 100000          |    148.096 ms |    NA |     7000.0000 |     6000.0000 |     2000.0000 |     88723.47 KB |
-| ChoetlNacha | 100000          | 35,719.891 ms |    NA | 21667000.0000 | 21090000.0000 | 21090000.0000 | 375460385.66 KB |
+| Method      | NumberOfEntries | Mean         | Error | Gen0          | Gen1          | Gen2          | Allocated       |
+|------------ |---------------- |-------------:|------:|--------------:|--------------:|--------------:|----------------:|
+| FastACH     | 1000            |     11.62 ms |    NA |             - |             - |             - |       949.88 KB |
+| ChoetlNacha | 1000            |    908.52 ms |    NA |   561000.0000 |   555000.0000 |   555000.0000 |   3770936.66 KB |
+| FastACH     | 10000           |     31.50 ms |    NA |             - |             - |             - |      9297.73 KB |
+| ChoetlNacha | 10000           |  5,316.70 ms |    NA |  2485000.0000 |  2427000.0000 |  2425000.0000 |  37579633.04 KB |
+| FastACH     | 100000          |    214.57 ms |    NA |     7000.0000 |     6000.0000 |     2000.0000 |     92815.55 KB |
+| ChoetlNacha | 100000          | 43,563.12 ms |    NA | 31105000.0000 | 30491000.0000 | 30491000.0000 | 375791391.55 KB |
