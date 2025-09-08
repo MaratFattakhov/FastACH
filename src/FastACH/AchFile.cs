@@ -121,10 +121,17 @@ namespace FastACH
         {
             using StreamReader streamReader = new(filePath, Encoding.ASCII);
             var content = await streamReader.ReadToEndAsync(cancellationToken);
-            return ReadFromContent(content.AsSpan());
+            return ReadFromContent(content.AsSpan(), null);
         }
 
-        private static AchFile ReadFromContent(ReadOnlySpan<char> content)
+        public static async Task<AchFile> Read(string filePath, List<(IRecord record, uint line)> lineMap, CancellationToken cancellationToken = default)
+        {
+            using StreamReader streamReader = new(filePath, Encoding.ASCII);
+            var content = await streamReader.ReadToEndAsync(cancellationToken);
+            return ReadFromContent(content.AsSpan(), lineMap);
+        }
+
+        private static AchFile ReadFromContent(ReadOnlySpan<char> content, List<(IRecord record, uint line)>? lineMap)
         {
             var batchRecordList = new List<BatchRecord>();
             FileHeaderRecord? fileHeaderRecord = null;
@@ -138,50 +145,57 @@ namespace FastACH
                     switch (line.Slice(0, 1))
                     {
                         case "1":
-                            FileHeaderRecord oneRecord = new(line, lineNumber);
+                            FileHeaderRecord oneRecord = new(line);
                             fileHeaderRecord = oneRecord;
+                            lineMap?.Add((oneRecord, lineNumber));
                             break;
 
                         case "5":
                             if (currentBatch?.BatchControl == BatchControlRecord.Empty)
                                 throw new InvalidOperationException("Batch control (8) record is missing for batch header record.");
-                            BatchHeaderRecord fiveRecord = new(line, lineNumber);
+                            BatchHeaderRecord fiveRecord = new(line);
                             currentBatch = new BatchRecord() { BatchHeader = fiveRecord };
+                            lineMap?.Add((fiveRecord, lineNumber));
                             break;
 
                         case "6":
-                            EntryDetailRecord sixRecord = new(line, lineNumber);
+                            EntryDetailRecord sixRecord = new(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch (5) record found for entry record");
                             var transactionDetails = new TransactionRecord() { EntryDetail = sixRecord };
                             currentBatch.TransactionRecords.Add(transactionDetails);
+                            lineMap?.Add((sixRecord, lineNumber));
                             break;
 
                         case "7":
-                            AddendaRecord sevenRecord = new(line, lineNumber);
+                            AddendaRecord sevenRecord = new(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch (5) record found for entry record");
                             currentBatch.TransactionRecords.Last().AddendaRecords.Add(sevenRecord);
+                            lineMap?.Add((sevenRecord, lineNumber));
                             break;
 
                         case "8":
-                            BatchControlRecord eightRecord = new(line, lineNumber);
+                            BatchControlRecord eightRecord = new(line);
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch (5) record found for entry record");
                             currentBatch.BatchControl = eightRecord;
                             batchRecordList.Add(currentBatch);
+                            lineMap?.Add((eightRecord, lineNumber));
                             break;
 
                         case "9":
                             if (currentBatch?.BatchControl == BatchControlRecord.Empty)
                                 throw new InvalidOperationException("Batch control (8) record is missing for batch header record.");
-                            FileControlRecord nineRecord = new(line, lineNumber);
-                            return new AchFile()
+                            FileControlRecord nineRecord = new(line);
+                            var result = new AchFile()
                             {
                                 BatchRecordList = batchRecordList,
                                 FileControl = nineRecord,
                                 FileHeader = fileHeaderRecord ?? throw new InvalidOperationException("Missing File Header Record."),
                             };
+                            lineMap?.Add((nineRecord, lineNumber));
+                            return result;
 
                         default:
                             break;

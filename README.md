@@ -27,6 +27,20 @@ var achFile = await AchFile.Read("ACH.txt");
 achFile.WriteToConsole(); // Output to console
 ```
 
+``` csharp
+// Line map can be used for the error reporting
+var lineMap = new List<(IRecord record, uint line)>();
+var achFile = await AchFile.Read("ACH.txt", lineMap);
+```
+
+### Reading ACH file to colorful console
+``` csharp
+var achFile = await AchFile.Read(name);
+achFile.WriteToConsole();
+```
+
+![Console Output](doc/read_to_console.png)
+
 ### Writing ACH file
 ``` csharp
 var achFile = new AchFile()

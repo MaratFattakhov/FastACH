@@ -5,7 +5,7 @@ namespace FastACH.Records
     /// <summary>
     /// File Header Record (1 record)
     /// </summary>
-    public record class FileHeaderRecord : BaseRecord, IRecord
+    public record class FileHeaderRecord : IRecord
     {
         /// <summary>
         /// Position 1-1: Record Type Code (numeric)
@@ -77,7 +77,7 @@ namespace FastACH.Records
         }
 
         [SetsRequiredMembers]
-        internal FileHeaderRecord(ReadOnlySpan<char> data, uint lineNumber)
+        internal FileHeaderRecord(ReadOnlySpan<char> data)
         {
             var reader = new LineReader(data, 3);
             ImmediateDestination = reader.ReadString(10);
@@ -89,7 +89,6 @@ namespace FastACH.Records
             ImmediateDestinationName = reader.ReadString(23);
             ImmediateOriginName = reader.ReadString(23);
             ReferenceCode = reader.ReadString(8);
-            LineNumber = lineNumber;
         }
 
         public void Write(ILineWriter writer)

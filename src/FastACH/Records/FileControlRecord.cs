@@ -5,7 +5,7 @@ namespace FastACH.Records
     /// <summary>
     /// File Control Record (9 record)
     /// </summary>
-    public record class FileControlRecord : BaseRecord, IRecord
+    public record class FileControlRecord : IRecord
     {
         /// <summary>
         /// Position 1-1: Record Type Code (numeric)
@@ -60,7 +60,7 @@ namespace FastACH.Records
         }
 
         [SetsRequiredMembers]
-        internal FileControlRecord(ReadOnlySpan<char> data, uint lineNumber)
+        internal FileControlRecord(ReadOnlySpan<char> data)
         {
             var reader = new LineReader(data, 1);
             BatchCount = reader.ReadUInt(6);
@@ -69,7 +69,6 @@ namespace FastACH.Records
             EntryHash = reader.ReadULong(10);
             TotalDebitEntryDollarAmount = reader.ReadDecimal(12) / 100;
             TotalCreditEntryDollarAmount = reader.ReadDecimal(12) / 100;
-            LineNumber = lineNumber;
         }
 
         public void Write(ILineWriter writer)

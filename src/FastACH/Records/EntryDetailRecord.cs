@@ -5,7 +5,7 @@ namespace FastACH.Records
     /// <summary>
     /// Represents an Entry Detail Record (6 record)
     /// </summary>
-    public record class EntryDetailRecord : BaseRecord, IRecord
+    public record class EntryDetailRecord : IRecord
     {
         /// <summary>
         /// Position 1-1: Record Type Code (numeric)
@@ -89,7 +89,7 @@ namespace FastACH.Records
         }
 
         [SetsRequiredMembers]
-        internal EntryDetailRecord(ReadOnlySpan<char> data, uint lineNumber)
+        internal EntryDetailRecord(ReadOnlySpan<char> data)
         {
             var reader = new LineReader(data, 1);
             TransactionCode = reader.ReadUInt(2);
@@ -108,7 +108,6 @@ namespace FastACH.Records
                 _ => throw new ArgumentException($"Invalid Addenda Record Indicator (6 record) value: Expected 0 or 1, Actual {addendaRecordIndicator}"),
             };
             TraceNumber = reader.ReadString(15);
-            LineNumber = lineNumber;
         }
 
         public void Write(ILineWriter writer)

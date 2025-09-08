@@ -5,7 +5,7 @@ namespace FastACH.Records
     /// <summary>
     /// Batch Control Record (8 record)
     /// </summary>
-    public record class BatchControlRecord : BaseRecord, IRecord
+    public record class BatchControlRecord : IRecord
     {
         /// <summary>
         /// Position 1-1: Record Type Code (numeric)
@@ -75,7 +75,7 @@ namespace FastACH.Records
         }
 
         [SetsRequiredMembers]
-        internal BatchControlRecord(ReadOnlySpan<char> data, uint lineNumber)
+        internal BatchControlRecord(ReadOnlySpan<char> data)
         {
             var reader = new LineReader(data, 1);
             ServiceClassCode = reader.ReadUInt(3);
@@ -88,7 +88,6 @@ namespace FastACH.Records
             reader.Skip(6);
             OriginatingDFINumber = reader.ReadString(8);
             BatchNumber = reader.ReadULong(7);
-            LineNumber = lineNumber;
         }
 
         public void Write(ILineWriter writer)
