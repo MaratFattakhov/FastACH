@@ -8,17 +8,17 @@ namespace FastACH
     public class BatchRecord
     {
         /// <summary>
-        /// Represents the Batch Header Record.
+        /// Gets or sets the Batch Header Record.
         /// </summary>
         public required BatchHeaderRecord BatchHeader { get; set; }
 
         /// <summary>
-        /// Represents the Batch Control Record.
+        /// Gets or sets the Batch Control Record.
         /// </summary>
         public BatchControlRecord BatchControl { get; set; } = BatchControlRecord.Empty;
 
         /// <summary>
-        /// List of Tranasctions for this Batch.
+        /// Gets or sets the list of transactions for this batch.
         /// </summary>
         public List<TransactionRecord> TransactionRecords { get; set; } = new();
     }

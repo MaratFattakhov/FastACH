@@ -3,19 +3,34 @@ using System.Text;
 
 namespace FastACH
 {
+    /// <summary>
+    /// Represents an ACH (Automated Clearing House) file containing batch records and control information.
+    /// </summary>
     public class AchFile
     {
         public AchFile()
         {
         }
 
+        /// <summary>
+        /// Gets or sets the File Header Record containing metadata about the ACH file.
+        /// </summary>
         public required FileHeaderRecord FileHeader { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the list of batch records contained in this ACH file.
+        /// </summary>
         public List<BatchRecord> BatchRecordList { get; set; } = new List<BatchRecord>();
+        
+        /// <summary>
+        /// Gets or sets the File Control Record containing summary totals for the file.
+        /// </summary>
         public FileControlRecord FileControl { get; set; } = FileControlRecord.Empty;
 
         /// <summary>
         /// Recalculates control records, usually used as you want to write the file somewhere.
         /// </summary>
+        /// <param name="options">The writing options to use for updating control records.</param>
         public void UpdateControlRecords(WritingOptions options)
         {
             foreach (var batchRecord in BatchRecordList)
@@ -38,8 +53,21 @@ namespace FastACH
             FileControl.TotalDebitEntryDollarAmount = BatchRecordList.Sum(p => p.BatchControl.TotalDebitEntryDollarAmount);
         }
 
+        /// <summary>
+        /// Writes the ACH file to the specified file path using ASCII encoding.
+        /// </summary>
+        /// <param name="filePath">The path where the ACH file will be written.</param>
+        /// <param name="ct">Cancellation token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous write operation.</returns>
         public Task WriteToFile(string filePath, CancellationToken ct = default) => WriteToFile(filePath, _ => { }, ct);
 
+        /// <summary>
+        /// Writes the ACH file to the specified file path using ASCII encoding with custom writing options.
+        /// </summary>
+        /// <param name="filePath">The path where the ACH file will be written.</param>
+        /// <param name="configure">Action to configure writing options.</param>
+        /// <param name="ct">Cancellation token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous write operation.</returns>
         public async Task WriteToFile(string filePath, Action<WritingOptions> configure, CancellationToken ct = default)
         {
             using var memoryStream = new MemoryStream();
@@ -54,8 +82,21 @@ namespace FastACH
             await fileStream.FlushAsync(ct);
         }
 
+        /// <summary>
+        /// Writes the ACH file to the specified stream using ASCII encoding.
+        /// </summary>
+        /// <param name="stream">The stream where the ACH file will be written.</param>
+        /// <param name="ct">Cancellation token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous write operation.</returns>
         public Task WriteToStream(Stream stream, CancellationToken ct = default) => WriteToStream(stream, _ => { }, ct);
 
+        /// <summary>
+        /// Writes the ACH file to the specified stream using ASCII encoding with custom writing options.
+        /// </summary>
+        /// <param name="stream">The stream where the ACH file will be written.</param>
+        /// <param name="configure">Action to configure writing options.</param>
+        /// <param name="ct">Cancellation token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous write operation.</returns>
         public Task WriteToStream(Stream stream, Action<WritingOptions> configure, CancellationToken ct = default)
         {
             using var streamWriter = new StreamWriter(stream, Encoding.ASCII);
@@ -64,6 +105,10 @@ namespace FastACH
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Writes the ACH file to the console with optional color-coded output.
+        /// </summary>
+        /// <param name="configure">Optional action to configure writing options.</param>
         public void WriteToConsole(Action<WritingOptions>? configure = null)
         {
             Write(Console.Out, configure, ConsoleWriter.CreateForRecord);
@@ -116,7 +161,10 @@ namespace FastACH
         /// <summary>
         /// Breaks file into objects, based on the NACHA file specification.
         /// </summary>
-        /// <exception cref="AchFileReadingException">Thrown when the file is not in the correct format.</exception></exception>
+        /// <param name="filePath">The path to the ACH file to read.</param>
+        /// <param name="cancellationToken">Cancellation token to cancel the operation.</param>
+        /// <returns>A task representing the asynchronous read operation, containing the parsed ACH file.</returns>
+        /// <exception cref="AchFileReadingException">Thrown when the file is not in the correct format.</exception>
         public static async Task<AchFile> Read(string filePath, CancellationToken cancellationToken = default)
         {
             using StreamReader streamReader = new(filePath, Encoding.ASCII);
