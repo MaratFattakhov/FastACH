@@ -16,6 +16,7 @@ Add namespace to the program
 
 ``` csharp
 using FastACH;
+using FastACH.Builders; // For using AchFileBuilder
 ```
 
 ## Usage
@@ -41,11 +42,100 @@ achFile.WriteToConsole();
 
 ![Console Output](doc/read_to_console.png)
 
-### Writing ACH file
+### Writing ACH file using AchFileBuilder (Recommended)
+
+The `AchFileBuilder` provides a fluent API for building ACH files with less boilerplate code.
+
+#### Simple Example - Credit and Debit Transactions
+``` csharp
+var achFile = new AchFileBuilder()
+    .With(
+        ImmediateDestination: "123456789",
+        ImmediateOrigin: "987654321",
+        ImmediateDestinationName: "Bank of America",
+        ImmediateOriginName: "My Corporation")
+    .WithBatch(batch => batch
+        .With(
+            CompanyId: "1234567890",
+            OriginatingDFIID: "12345678",
+            CompanyEntryDescription: "PAYROLL",
+            CompanyName: "My Company")
+        .WithCreditTransaction(
+            amount: 1500.00m,
+            routingNumber: "111111111",
+            accountNumber: "987654321",
+            receiverName: "John Doe")
+        .WithDebitTransaction(
+            amount: 500.00m,
+            routingNumber: "222222222",
+            accountNumber: "123456789",
+            receiverName: "Jane Smith"))
+    .Build();
+
+await achFile.WriteToFile("ACH.txt");
+```
+
+#### Advanced Example - With All Optional Fields
+``` csharp
+var achFile = new AchFileBuilder()
+    .With(
+        ImmediateDestination: "123456789",
+        ImmediateOrigin: "987654321",
+        ImmediateDestinationName: "PNC Bank",
+        ImmediateOriginName: "Microsoft Inc.",
+        ReferenceCode: "REF12345",
+        FileIdModifier: 'A')
+    .WithBatch(batch => batch
+        .With(
+            CompanyId: "1234567890",
+            OriginatingDFIID: "12345678",
+            CompanyEntryDescription: "PAYROLL",
+            CompanyName: "My Company",
+            ServiceClassCode: 200,
+            entryClassCode: "PPD",
+            CompanyDiscretionaryData: "DISCRETIONARY",
+            CompanyDescriptiveDate: new DateOnly(2024, 1, 15),
+            EffectiveEntryDate: new DateOnly(2024, 1, 31),
+            OriginatorsStatusCode: '1',
+            BatchNumber: 1)
+        .WithCreditTransaction(
+            amount: 1500.00m,
+            routingNumber: "111111111",
+            accountNumber: "987654321",
+            receiverName: "Employee One",
+            receiverId: "EMP001",
+            discretionaryData: "PAY")
+        .WithAddenda(
+            addendaTypeCode: 5,
+            addendaInformation: "Salary payment for January 2024",
+            addendaSequenceNumber: 1))
+    .Build();
+
+await achFile.WriteToFile("ACH.txt");
+```
+
+#### Multiple Batches Example
+``` csharp
+var achFile = new AchFileBuilder()
+    .With("123456789", "987654321")
+    .WithBatch(batch => batch
+        .With("1234567890", "12345678", "PAYROLL", "Company A")
+        .WithCreditTransaction(1000.00m, "111111111", "ACCT001", "Employee 1")
+        .WithCreditTransaction(1200.00m, "222222222", "ACCT002", "Employee 2"))
+    .WithBatch(batch => batch
+        .With("0987654321", "87654321", "INVOICE", "Company B")
+        .WithDebitTransaction(500.00m, "333333333", "ACCT003", "Customer 1")
+        .WithDebitTransaction(750.00m, "444444444", "ACCT004", "Customer 2"))
+    .Build();
+
+await achFile.WriteToFile("ACH.txt");
+```
+
+### Writing ACH file (Manual Approach)
 ``` csharp
 var achFile = new AchFile()
 {
-    OneRecord = new FileHeaderRecord()
+    FileHeader = new FileHeaderRecord()
     {
         ImmediateDestination = "123456789",
         ImmediateOrigin = "123456789",
@@ -71,7 +161,7 @@ var achFile = new AchFile()
                 EffectiveEntryDate = new DateOnly(2011, 01, 02),
                 OriginatingDFIID = "DFINumber"
             },
-            TransactionDetailsList =
+            TransactionRecords =
             {
                 new TransactionRecord
                 {
@@ -87,9 +177,12 @@ var achFile = new AchFile()
                         DiscretionaryData = "Desc Data",
                         AddendaRecordIndicator = true,
                     },
-                    Addenda = new AddendaRecord()
+                    AddendaRecords = new List<AddendaRecord>
                     {
-                        AddendaInformation = "Monthly bill"
+                        new AddendaRecord()
+                        {
+                            AddendaInformation = "Monthly bill"
+                        }
                     }
                 },
                 new TransactionRecord()
@@ -105,8 +198,7 @@ var achFile = new AchFile()
                         ReceiverName = "ID Name",
                         DiscretionaryData = "Desc Data",
                         AddendaRecordIndicator = false,
-                    },
-                    Addenda = null
+                    }
                 }
             }
         }
