@@ -8,14 +8,14 @@ namespace FastACH.Tests
         public async Task WriteToFile_Writes_The_Same_File()
         {
             // Arrange
-            var achFile = await AchFile.Read("..\\..\\..\\ACH.txt");
-            var expected = await File.ReadAllLinesAsync("..\\..\\..\\ACH.txt");
+            var achFile = await AchFile.Read("ACH.txt");
+            var expected = await File.ReadAllLinesAsync("ACH.txt");
 
             // Act
-            await achFile.WriteToFile("..\\..\\..\\ACH_saved.txt");
+            await achFile.WriteToFile("ACH_saved.txt");
 
             // Assert
-            var actual = await File.ReadAllLinesAsync("..\\..\\..\\ACH_saved.txt");
+            var actual = await File.ReadAllLinesAsync("ACH_saved.txt");
             actual.Should().BeEquivalentTo(expected);
         }
 
@@ -23,8 +23,8 @@ namespace FastACH.Tests
         public async Task WriteToStream_Writes_The_Same_File()
         {
             // Arrange
-            var achFile = await AchFile.Read("..\\..\\..\\ACH.txt");
-            var expected = await File.ReadAllBytesAsync("..\\..\\..\\ACH.txt");
+            var achFile = await AchFile.Read("ACH.txt");
+            var expected = await File.ReadAllBytesAsync("ACH.txt");
 
             // Act
             using var memoryStream = new MemoryStream();

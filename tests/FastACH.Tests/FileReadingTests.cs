@@ -8,7 +8,7 @@ namespace FastACH.Tests
         public async Task Read_Returns_AchFile()
         {
             // Arrange && Act
-            var actual = await AchFile.Read("..\\..\\..\\ACH.txt");
+            var actual = await AchFile.Read("ACH.txt");
 
             // Assert
             actual.Should().NotBeNull();

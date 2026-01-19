@@ -9,7 +9,7 @@ namespace FastACH.Tests
         {
             // Arrange & Act
             var lineMap = new List<(IRecord record, uint line)>();
-            var achFile = await AchFile.Read("..\\..\\..\\ACH.txt", lineMap);
+            var achFile = await AchFile.Read("ACH.txt", lineMap);
 
             // Assert
             lineMap.Should().NotBeNull();
@@ -27,7 +27,7 @@ namespace FastACH.Tests
         public async Task Read_WithLineMap_LineNumbers_Are_Strictly_Increasing()
         {
             var lineMap = new List<(IRecord record, uint line)>();
-            var _ = await AchFile.Read("..\\..\\..\\ACH.txt", lineMap);
+            var _ = await AchFile.Read("ACH.txt", lineMap);
             lineMap.Select(x => x.line).Should().BeInAscendingOrder();
         }
 
@@ -35,7 +35,7 @@ namespace FastACH.Tests
         public async Task Read_WithLineMap_Count_Matches_Number_Of_Records()
         {
             var lineNumbers = new List<(IRecord record, uint line)>();
-            var achFile = await AchFile.Read("..\\..\\..\\ACH.txt", lineNumbers);
+            var achFile = await AchFile.Read("ACH.txt", lineNumbers);
 
             var expectedCount = 2 // file header + file control
                 + achFile.BatchRecordList.Count * 2 // each batch header + batch control
