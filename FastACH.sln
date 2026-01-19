@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.8.34330.188
+# Visual Studio Version 18
+VisualStudioVersion = 18.1.11312.151 d18.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FastACH", "src\FastACH\FastACH.csproj", "{65A68EEA-8FF0-4243-AEE5-9720B3631680}"
 EndProject
@@ -16,13 +16,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 		Directory.Build.props = Directory.Build.props
 		LICENSE = LICENSE
+		doc\logo_nuget.png = doc\logo_nuget.png
 		nuget.config = nuget.config
 		README.md = README.md
-	EndProjectSection
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".circleci", ".circleci", "{9818770F-1D39-4CD6-862E-DCC1AB20CBAF}"
-	ProjectSection(SolutionItems) = preProject
-		.circleci\config.yml = .circleci\config.yml
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{48808604-49A1-462F-AC55-491E0E299FBE}"
@@ -78,7 +74,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{65A68EEA-8FF0-4243-AEE5-9720B3631680} = {24773974-0AA7-4B86-B155-DC37FD2AF877}
 		{062EAD7B-5FA4-4C29-9EB8-FD4B153BF820} = {004AAAE5-A97B-4C28-BE0E-605A59E49B3C}
-		{9818770F-1D39-4CD6-862E-DCC1AB20CBAF} = {80F68839-BD77-4C1F-A647-FCE24D897569}
 		{7DCF3A6C-60F7-4292-89E5-5D81E60417FE} = {48808604-49A1-462F-AC55-491E0E299FBE}
 		{B74C8264-B9F8-49DA-87C2-79A7CAD50F1D} = {48808604-49A1-462F-AC55-491E0E299FBE}
 		{407D7EC7-AD1B-4765-8ED7-9BF665E4037D} = {48808604-49A1-462F-AC55-491E0E299FBE}

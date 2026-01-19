@@ -25,9 +25,6 @@
 
 	<AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
 	<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-	<!--<SignAssembly>True</SignAssembly>-->
-	<!--<AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)/Build/project_name.snk</AssemblyOriginatorKeyFile>-->
-	<!--<DelaySign>False</DelaySign>-->
 
 	<GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
 	<GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
