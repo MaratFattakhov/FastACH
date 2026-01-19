@@ -6,11 +6,11 @@
     <Nullable>enable</Nullable>
     <IsAotCompatible>true</IsAotCompatible>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageIcon>logo_nuget.png</PackageIcon>
+    <PackageIcon>logo_nuget_128.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\..\doc\logo_nuget.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\doc\logo_nuget_128.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
