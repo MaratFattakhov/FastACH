@@ -47,6 +47,8 @@ namespace FastACH.Records
         /// </summary>
         public string Reserved => new string(' ', 39);
 
+        public uint LineNumber { get; internal set; }
+
         internal FileControlRecord()
         {
         }

@@ -72,6 +72,8 @@ namespace FastACH.Records
         /// </summary>
         public string ReferenceCode { get; set; } = string.Empty;
 
+        public uint LineNumber { get; internal set; }
+
         public FileHeaderRecord()
         {
         }

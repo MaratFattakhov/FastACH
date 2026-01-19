@@ -83,6 +83,8 @@ namespace FastACH.Records
         /// </summary>
         public string TraceNumber { get; set; } = string.Empty;
 
+        public uint LineNumber { get; internal set; }
+
         public EntryDetailRecord()
         {
 

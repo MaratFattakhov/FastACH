@@ -62,6 +62,8 @@ namespace FastACH.Records
         /// </summary>
         public required ulong BatchNumber { get; set; }
 
+        public uint LineNumber { get; internal set; }
+
         internal BatchControlRecord()
         {
         }

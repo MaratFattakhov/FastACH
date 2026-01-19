@@ -28,6 +28,8 @@ namespace FastACH.Records
         // Position 88-94: Entry Detail Sequence Number (numeric)
         public ulong EntryDetailSequenceNumber { get; set; }
 
+        public uint LineNumber { get; internal set; }
+
         public AddendaRecord()
         {
         }
