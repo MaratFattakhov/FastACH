@@ -40,7 +40,7 @@ var achFile = await AchFile.Read(name);
 achFile.WriteToConsole();
 ```
 
-![Console Output](doc/read_to_console.png)
+![Console Output](https://raw.githubusercontent.com/MaratFattakhov/FastACH/master/doc/read_to_console.png)
 
 ### Writing ACH file using AchFileBuilder (Recommended)
 
