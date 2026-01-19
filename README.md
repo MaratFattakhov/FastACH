@@ -9,7 +9,7 @@
 
 ## Installation [![NuGet](https://img.shields.io/nuget/v/FastACH.svg)](https://www.nuget.org/packages/FastACH/)
 
-### .NET 7.0
+### .NET 8.0, .NET 9.0, .NET 10.0
 	PM> Install-Package FastACH
 
 Add namespace to the program
