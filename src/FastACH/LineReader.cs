@@ -12,11 +12,6 @@
 
         private void ValidateData()
         {
-            if (_data.Length != 94)
-            {
-                throw new ArgumentException($"Invalid record length: Expected 94, Actual {_data.Length}.");
-            }
-
             for (int i = 0; i < _data.Length; i++)
             {
                 if (_data[i] == '\t')
@@ -28,6 +23,11 @@
                 {
                     throw new ArgumentException($"Invalid character found at position {i}: {_data.ToString()}");
                 }
+            }
+
+            if (_data.Length != 94)
+            {
+                throw new ArgumentException($"Invalid record length: Expected 94, Actual {_data.Length}.");
             }
         }
 
