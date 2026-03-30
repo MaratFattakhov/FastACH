@@ -12,22 +12,22 @@
 
         private void ValidateData()
         {
+            if (_data.Length != 94)
+            {
+                throw new LineValidationException($"Invalid record length: Expected 94, Actual {_data.Length}.", -1);
+            }
+
             for (int i = 0; i < _data.Length; i++)
             {
                 if (_data[i] == '\t')
                 {
-                    throw new ArgumentException($"Invalid tab at position {i}: {_data.ToString()}");
+                    throw new LineValidationException($"Invalid tab at position {i}: {_data.ToString()}", i);
                 }
 
                 if (_data[i] >= 128)
                 {
-                    throw new ArgumentException($"Invalid character found at position {i}: {_data.ToString()}");
+                    throw new LineValidationException($"Invalid character found at position {i}: {_data.ToString()}", i);
                 }
-            }
-
-            if (_data.Length != 94)
-            {
-                throw new ArgumentException($"Invalid record length: Expected 94, Actual {_data.Length}.");
             }
         }
 

@@ -11,8 +11,10 @@ namespace FastACH.Tests
         {
             // too short
             Action act = () => new LineReader("abc".AsSpan());
-            act.Should().Throw<ArgumentException>()
-                .WithMessage("Invalid record length: Expected 94, Actual 3.*");
+            var exception = act.Should().Throw<LineValidationException>()
+                .WithMessage("Invalid record length: Expected 94, Actual 3.*")
+                .Which;
+            exception.Position.Should().Be(-1);
         }
 
         [Fact]
@@ -20,8 +22,10 @@ namespace FastACH.Tests
         {
             var data = Pad("abc\tdef");
             Action act = () => new LineReader(data.AsSpan());
-            act.Should().Throw<ArgumentException>()
-                .WithMessage("Invalid tab at position *");
+            var exception = act.Should().Throw<LineValidationException>()
+                .WithMessage("Invalid tab at position *")
+                .Which;
+            exception.Position.Should().Be(3);
         }
 
         [Fact]
@@ -31,8 +35,10 @@ namespace FastACH.Tests
             for (int i = 0; i < chars.Length; i++) chars[i] = 'A';
             chars[10] = (char)129; // > 128
             Action act = () => new LineReader(chars);
-            act.Should().Throw<ArgumentException>()
-                .WithMessage("Invalid character found at position 10: *");
+            var exception = act.Should().Throw<LineValidationException>()
+                .WithMessage("Invalid character found at position 10: *")
+                .Which;
+            exception.Position.Should().Be(10);
         }
 
         [Fact]

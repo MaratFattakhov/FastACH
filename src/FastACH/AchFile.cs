@@ -16,12 +16,12 @@ namespace FastACH
         /// Gets or sets the File Header Record containing metadata about the ACH file.
         /// </summary>
         public required FileHeaderRecord FileHeader { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the list of batch records contained in this ACH file.
         /// </summary>
         public List<BatchRecord> BatchRecordList { get; set; } = new List<BatchRecord>();
-        
+
         /// <summary>
         /// Gets or sets the File Control Record containing summary totals for the file.
         /// </summary>
@@ -167,7 +167,7 @@ namespace FastACH
         /// <exception cref="AchFileReadingException">Thrown when the file is not in the correct format.</exception>
         public static async Task<AchFile> Read(string filePath, CancellationToken cancellationToken = default)
         {
-            using StreamReader streamReader = new(filePath, Encoding.ASCII);
+            using StreamReader streamReader = new(filePath, Encoding.UTF8);
             return await ReadFromStreamAsync(streamReader, cancellationToken);
         }
 

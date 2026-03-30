@@ -12,6 +12,9 @@
         /// <param name="innerException">The exception that caused the reading error.</param>
         public AchFileReadingException(uint line, Exception innerException) : base($"An Error happened on {line} line: {innerException.Message}", innerException)
         {
+            Line = line;
         }
+
+        public uint Line { get; }
     }
 }
