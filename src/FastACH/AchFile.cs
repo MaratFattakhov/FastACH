@@ -128,7 +128,7 @@ namespace FastACH
                 UpdateControlRecords(options);
             }
 
-            var lineNumber = 0;
+            uint lineNumber = 0;
             WriteToStream(writer, FileHeader, getLineWriter, ref lineNumber);
 
             foreach (var batchRecord in BatchRecordList)
@@ -176,6 +176,7 @@ namespace FastACH
             var batchRecordList = new List<BatchRecord>();
             FileHeaderRecord? fileHeaderRecord = null;
             BatchRecord? currentBatch = null;
+            TransactionRecord? currentTransaction = null;
             uint lineNumber = 0;
             try
             {
@@ -200,19 +201,26 @@ namespace FastACH
                             EntryDetailRecord sixRecord = new(line) { LineNumber = lineNumber };
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch (5) record found for entry record");
-                            var transactionDetails = new TransactionRecord() { EntryDetail = sixRecord };
-                            currentBatch.TransactionRecords.Add(transactionDetails);
+                            currentTransaction = new TransactionRecord() { EntryDetail = sixRecord };
+                            currentBatch.TransactionRecords.Add(currentTransaction);
                             break;
                         case '7':
                             AddendaRecord sevenRecord = new(line) { LineNumber = lineNumber };
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch (5) record found for entry record");
-                            currentBatch.TransactionRecords.Last().AddendaRecords.Add(sevenRecord);
+                            if (currentTransaction is null)
+                                throw new InvalidOperationException("No entry (6) record found for addenda record");
+                            if (!currentTransaction.EntryDetail.AddendaRecordIndicator)
+                                throw new InvalidOperationException("Addenda record found, but entry detail record indicates there are no addenda records.");
+                            currentTransaction.AddendaRecords.Add(sevenRecord);
                             break;
                         case '8':
                             BatchControlRecord eightRecord = new(line) { LineNumber = lineNumber };
                             if (currentBatch is null)
                                 throw new InvalidOperationException("No batch (5) record found for entry record");
+                            if (currentTransaction is null) throw new InvalidOperationException("At least one entry (6) record is required");
+                            if (currentTransaction.AddendaRecords.Count == 0 && currentTransaction.EntryDetail.AddendaRecordIndicator)
+                                throw new InvalidOperationException("Entry detail record indicates there are addenda records, but no addenda records found.");
                             currentBatch.BatchControl = eightRecord;
                             batchRecordList.Add(currentBatch);
                             break;
@@ -297,18 +305,18 @@ namespace FastACH
             TextWriter writer,
             IRecord record,
             Func<IRecord, ILineWriter> getLineWriter,
-            ref int lineNumber,
+            ref uint lineNumber,
             bool newLine = true)
         {
             lineNumber++;
             switch (record)
             {
-                case FileHeaderRecord r: r.LineNumber = (uint)lineNumber; break;
-                case BatchHeaderRecord r: r.LineNumber = (uint)lineNumber; break;
-                case EntryDetailRecord r: r.LineNumber = (uint)lineNumber; break;
-                case AddendaRecord r: r.LineNumber = (uint)lineNumber; break;
-                case BatchControlRecord r: r.LineNumber = (uint)lineNumber; break;
-                case FileControlRecord r: r.LineNumber = (uint)lineNumber; break;
+                case FileHeaderRecord r: r.LineNumber = lineNumber; break;
+                case BatchHeaderRecord r: r.LineNumber = lineNumber; break;
+                case EntryDetailRecord r: r.LineNumber = lineNumber; break;
+                case AddendaRecord r: r.LineNumber = lineNumber; break;
+                case BatchControlRecord r: r.LineNumber = lineNumber; break;
+                case FileControlRecord r: r.LineNumber = lineNumber; break;
             }
 
             var lineWriter = getLineWriter(record);

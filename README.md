@@ -212,11 +212,11 @@ await achFile.WriteToFile("ACH.txt");
 
 I created a benchmark to compare reading performance between FastACH and very popular [ChoETL.Nacha library](https://github.com/Cinchoo/ChoETL.NACHA).
 
-| Method      | NumberOfEntries | Mean         | Error | Gen0          | Gen1          | Gen2          | Allocated       |
-|------------ |---------------- |-------------:|------:|--------------:|--------------:|--------------:|----------------:|
-| FastACH     | 1000            |     11.62 ms |    NA |             - |             - |             - |       949.88 KB |
-| ChoetlNacha | 1000            |    908.52 ms |    NA |   561000.0000 |   555000.0000 |   555000.0000 |   3770936.66 KB |
-| FastACH     | 10000           |     31.50 ms |    NA |             - |             - |             - |      9297.73 KB |
-| ChoetlNacha | 10000           |  5,316.70 ms |    NA |  2485000.0000 |  2427000.0000 |  2425000.0000 |  37579633.04 KB |
-| FastACH     | 100000          |    214.57 ms |    NA |     7000.0000 |     6000.0000 |     2000.0000 |     92815.55 KB |
-| ChoetlNacha | 100000          | 43,563.12 ms |    NA | 31105000.0000 | 30491000.0000 | 30491000.0000 | 375791391.55 KB |
+| Method      | NumberOfEntries | Mean          | Error | Gen0          | Gen1          | Gen2          | Allocated         |
+|------------ |---------------- |--------------:|------:|--------------:|--------------:|--------------:|------------------:|
+| FastACH     | 1000            |      8.936 ms |    NA |             - |             - |             - |         835.11 KB |
+| ChoetlNacha | 1000            |    897.993 ms |    NA |   535000.0000 |   529000.0000 |   529000.0000 |    377,0384.62 KB |
+| FastACH     | 10000           |     19.415 ms |    NA |             - |             - |             - |       8,261.02 KB |
+| ChoetlNacha | 10000           |  5,566.911 ms |    NA |  3549000.0000 |  3489000.0000 |  3487000.0000 |  37,595,192.04 KB |
+| FastACH     | 100000          |    193.902 ms |    NA |     6000.0000 |     5000.0000 |             - |      82,478.65 KB |
+| ChoetlNacha | 100000          | 37,031.587 ms |    NA | 25610000.0000 | 25008000.0000 | 25008000.0000 | 375,717,659.82 KB |
