@@ -1,4 +1,7 @@
 ﻿using FastACH;
+using System;
 
-var achFile = await AchFile.Read("C:\\temp\\395194_PT073025-04ASUREGS.txt");
+string name = Environment.GetCommandLineArgs()[1];
+
+var achFile = await AchFile.Read(name);
 await achFile.WriteToFile("C:\\temp\\saved.txt", o => o.UpdateControlRecords = false);

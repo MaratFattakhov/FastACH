@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "FastACH.ReadToConsole": {
+      "commandName": "Project",
+      "commandLineArgs": "ACH.txt"
+    }
+  }
+}
