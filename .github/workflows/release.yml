@@ -33,7 +33,9 @@ jobs:
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           echo "Packing version $VERSION"
-          dotnet pack src/FastACH/FastACH.csproj --configuration Release --no-build --include-symbols -o ./artifacts -p:PackageVersion=$VERSION
+          dotnet pack src/FastACH/FastACH.csproj --configuration Release --no-build --include-symbols -o ./artifacts \
+            -p:PackageVersion=$VERSION \
+            -p:PackageReleaseNotes="${{ github.event.release.body }}"
 
       - name: Publish to NuGet
         run: dotnet nuget push "artifacts/*.nupkg" --skip-duplicate --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json

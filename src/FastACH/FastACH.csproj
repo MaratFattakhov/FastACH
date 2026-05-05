@@ -7,6 +7,8 @@
     <IsAotCompatible>true</IsAotCompatible>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>logo_nuget_128.png</PackageIcon>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\FastACH.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +21,7 @@
 
   <ItemGroup>
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-      <_Parameter1>$(MSBuildProjectName).Tests</_Parameter1>
+      <_Parameter1>$(MSBuildProjectName).Tests, PublicKey=0024000004800000140100000602000000240000525341310008000001000100b998deedaab24fc5cb368239e80285208805a236434cffe8d7f5054a1acf55e83d710e4f847bf5473b1e491f3ba185299f8dc653b8902cb58b5417503899e15438bbb34b17a2499c8cf3da0c3725c89584fbdb7abc409f98b631459297eaa526bfd2b097d39f07e7490da249269105c2209f64c42020b224b33bcf7ef8b51b1a6feadf989a067805b37ec1200a21d2940a96fae581b871d4caae18ce1ff08d9a6779f4f2f035a60f67c856cdb2344aed823fdbd7eb40d17b80119ec821ec6f9dc9462e952d01fa0bfaf520068f4a0d4a57d56be0db6660eb6fc6c4affc9a9854bcf19691cf8dd9c833698e390393aef22aeea33e95f4700ca04f663718a6f3bc</_Parameter1>
     </AssemblyAttribute>
   </ItemGroup>
 
