@@ -103,8 +103,9 @@ namespace FastACH.Builders
             /// <param name="receiverName">The name of the receiver.</param>
             /// <param name="receiverId">The receiver's identification number.</param>
             /// <param name="discretionaryData">Optional discretionary data.</param>
+            /// <param name="transactionCode">The transaction code for this entry. Defaults to 27 (checking debit)</param>
             /// <returns>The current BatchRecordBuilder instance for method chaining.</returns>
-            public BatchRecordBuilder WithDebitTransaction(decimal amount, string routingNumber, string accountNumber, string receiverName = "", string receiverId = "", string discretionaryData = "")
+            public BatchRecordBuilder WithDebitTransaction(decimal amount, string routingNumber, string accountNumber, string receiverName = "", string receiverId = "", string discretionaryData = "", uint transactionCode = 27)
             {
                 var entryDetail = new EntryDetailRecord()
                 {
@@ -115,7 +116,7 @@ namespace FastACH.Builders
                     ReceiverIdentificationNumber = receiverId,
                     ReceiverName = receiverName,
                     ReceivingDFIID = ulong.Parse(routingNumber.PadLeft(9).AsSpan().Slice(0, 8), CultureInfo.InvariantCulture),
-                    TransactionCode = 27,
+                    TransactionCode = transactionCode,
                     DiscretionaryData = discretionaryData
                 };
 
@@ -132,8 +133,9 @@ namespace FastACH.Builders
             /// <param name="receiverName">The name of the receiver.</param>
             /// <param name="receiverId">The receiver's identification number.</param>
             /// <param name="discretionaryData">Optional discretionary data.</param>
+            /// <param name="transactionCode">The transaction code for this entry. Defaults to 22 (checking credit)</param>
             /// <returns>The current BatchRecordBuilder instance for method chaining.</returns>
-            public BatchRecordBuilder WithCreditTransaction(decimal amount, string routingNumber, string accountNumber, string receiverName = "", string receiverId = "", string discretionaryData = "")
+            public BatchRecordBuilder WithCreditTransaction(decimal amount, string routingNumber, string accountNumber, string receiverName = "", string receiverId = "", string discretionaryData = "", uint transactionCode = 22)
             {
                 var entryDetail = new EntryDetailRecord()
                 {
@@ -144,7 +146,7 @@ namespace FastACH.Builders
                     ReceiverIdentificationNumber = receiverId,
                     ReceiverName = receiverName,
                     ReceivingDFIID = ulong.Parse(routingNumber.PadLeft(9).AsSpan().Slice(0, 8), CultureInfo.InvariantCulture),
-                    TransactionCode = 22,
+                    TransactionCode = transactionCode,
                     DiscretionaryData = discretionaryData
                 };
 

@@ -410,5 +410,127 @@ namespace FastACH.Tests.Builders
             achFile.BatchRecordList[0].TransactionRecords[1].EntryDetail.DiscretionaryData.Should().Be("D2");
             achFile.BatchRecordList[0].TransactionRecords[1].AddendaRecords.Should().BeEmpty();
         }
+
+        [Fact]
+        public void WithDebitTransaction_CustomTransactionCode_ShouldUseSavingsDebit()
+        {
+            // Arrange
+            var expectedAmount = 75.25m;
+            var expectedRoutingNumber = "123456789";
+            var expectedAccountNumber = "987654321";
+            var expectedReceiverName = "Jane Smith";
+            var expectedReceiverId = "ID456";
+            var expectedDiscretionaryData = "XY";
+
+            // Act
+            var achFile = new AchFileBuilder()
+                .With("123456789", "987654321")
+                .WithBatch(batch => batch
+                    .With("1234567890", "12345678", "PAYROLL", "My Company")
+                    .WithDebitTransaction(
+                        amount: expectedAmount,
+                        routingNumber: expectedRoutingNumber,
+                        accountNumber: expectedAccountNumber,
+                        receiverName: expectedReceiverName,
+                        receiverId: expectedReceiverId,
+                        discretionaryData: expectedDiscretionaryData,
+                        transactionCode: 37))
+                .Build();
+
+            // Assert
+            var transaction = achFile.BatchRecordList[0].TransactionRecords[0];
+            transaction.EntryDetail.Amount.Should().Be(expectedAmount);
+            transaction.EntryDetail.DFIAccountNumber.Should().Be(expectedAccountNumber);
+            transaction.EntryDetail.ReceiverName.Should().Be(expectedReceiverName);
+            transaction.EntryDetail.ReceiverIdentificationNumber.Should().Be(expectedReceiverId);
+            transaction.EntryDetail.DiscretionaryData.Should().Be(expectedDiscretionaryData);
+            transaction.EntryDetail.TransactionCode.Should().Be(37u); // Savings Debit
+            transaction.EntryDetail.AddendaRecordIndicator.Should().BeFalse();
+        }
+
+        [Fact]
+        public void WithCreditTransaction_CustomTransactionCode_ShouldUseSavingsCredit()
+        {
+            // Arrange
+            var expectedAmount = 100.50m;
+            var expectedRoutingNumber = "123456789";
+            var expectedAccountNumber = "987654321";
+            var expectedReceiverName = "John Doe";
+            var expectedReceiverId = "ID123";
+            var expectedDiscretionaryData = "DD";
+
+            // Act
+            var achFile = new AchFileBuilder()
+                .With("123456789", "987654321")
+                .WithBatch(batch => batch
+                    .With("1234567890", "12345678", "PAYROLL", "My Company")
+                    .WithCreditTransaction(
+                        amount: expectedAmount,
+                        routingNumber: expectedRoutingNumber,
+                        accountNumber: expectedAccountNumber,
+                        receiverName: expectedReceiverName,
+                        receiverId: expectedReceiverId,
+                        discretionaryData: expectedDiscretionaryData,
+                        transactionCode: 32))
+                .Build();
+
+            // Assert
+            var transaction = achFile.BatchRecordList[0].TransactionRecords[0];
+            transaction.EntryDetail.Amount.Should().Be(expectedAmount);
+            transaction.EntryDetail.DFIAccountNumber.Should().Be(expectedAccountNumber);
+            transaction.EntryDetail.ReceiverName.Should().Be(expectedReceiverName);
+            transaction.EntryDetail.ReceiverIdentificationNumber.Should().Be(expectedReceiverId);
+            transaction.EntryDetail.DiscretionaryData.Should().Be(expectedDiscretionaryData);
+            transaction.EntryDetail.TransactionCode.Should().Be(32u); // Savings Credit
+            transaction.EntryDetail.AddendaRecordIndicator.Should().BeFalse();
+        }
+
+        [Fact]
+        public void WithBatch_MixedCheckingAndSavingsTransactions_ShouldSetCorrectCodes()
+        {
+            // Act
+            var achFile = new AchFileBuilder()
+                .With("123456789", "987654321")
+                .WithBatch(batch => batch
+                    .With("1234567890", "12345678", "BILLPAY", "My Company")
+                    .WithDebitTransaction(100.00m, "123456789", "111111111",
+                        receiverName: "Checking Customer")
+                    .WithDebitTransaction(200.00m, "123456789", "222222222",
+                        receiverName: "Savings Customer",
+                        transactionCode: 37)
+                    .WithCreditTransaction(300.00m, "123456789", "333333333",
+                        receiverName: "Checking Vendor")
+                    .WithCreditTransaction(400.00m, "123456789", "444444444",
+                        receiverName: "Savings Vendor",
+                        transactionCode: 32))
+                .Build();
+
+            // Assert
+            var transactions = achFile.BatchRecordList[0].TransactionRecords;
+            transactions.Should().HaveCount(4);
+            transactions[0].EntryDetail.TransactionCode.Should().Be(27u); // Checking Debit
+            transactions[1].EntryDetail.TransactionCode.Should().Be(37u); // Savings Debit
+            transactions[2].EntryDetail.TransactionCode.Should().Be(22u); // Checking Credit
+            transactions[3].EntryDetail.TransactionCode.Should().Be(32u); // Savings Credit
+        }
+
+        [Fact]
+        public void WithDebitTransaction_PrenoteTransactionCode_ShouldSetCorrectCode()
+        {
+            // Act
+            var achFile = new AchFileBuilder()
+                .With("123456789", "987654321")
+                .WithBatch(batch => batch
+                    .With("1234567890", "12345678", "PAYROLL", "My Company")
+                    .WithDebitTransaction(0.00m, "123456789", "987654321",
+                        receiverName: "Prenote Test",
+                        transactionCode: 28))
+                .Build();
+
+            // Assert
+            var transaction = achFile.BatchRecordList[0].TransactionRecords[0];
+            transaction.EntryDetail.TransactionCode.Should().Be(28u); // Checking Debit Prenote
+            transaction.EntryDetail.Amount.Should().Be(0.00m);
+        }
     }
 }
